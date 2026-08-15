@@ -18,9 +18,11 @@
         devShells.default = pkgs.mkShell {
           name = "pico env";
           packages = with pkgs; [
+            clang
             cmake
             doxygen
             gcc-arm-embedded
+            neovim
             openocd-rp2040
             picotool
             pioasm
