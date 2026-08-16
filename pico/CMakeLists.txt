@@ -15,6 +15,7 @@ set(SRCS
     src/imu.c
     src/light_sensor.c
     src/main.c
+    src/server.c
 )
 
 add_executable(${PROJECT_NAME})
@@ -32,6 +33,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     hardware_irq
     hardware_i2c
     hardware_pwm
+    hardware_watchdog
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     WIFI_SSID=\"$ENV{WIFI_SSID}\"
