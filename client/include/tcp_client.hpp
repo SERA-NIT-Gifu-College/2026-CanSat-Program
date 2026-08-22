@@ -1,0 +1,43 @@
+#ifndef __TCP_CLIENT_HPP__
+#define __TCP_CLIENT_HPP__
+
+#include <array>
+#include <atomic>
+#include <string>
+#include <optional>
+#include <mutex>
+#include <boost/asio.hpp>
+
+class TCP_Client {
+    public:
+        typedef enum {
+            READ_IMU,
+            GET_CALIB_STATUS,
+            LOAD_CALIB,
+            SAVE_CALIB,
+            SEARCH_SUN,
+            START_SELF_CHARGE,
+            START_POWER_TRANS,
+            STOP_GENERATOR,
+            PING,
+            NUM_COMMANDS
+        } Command;
+
+        TCP_Client(boost::asio::io_context &ctx, std::string &addr_str, unsigned int port);
+
+        std::optional<std::shared_ptr<std::array<uint8_t, 16>>> sendCommand(Command cmd);
+    private:
+        void do_rx();
+        void do_tx();
+
+        boost::asio::ip::tcp::socket sckt_;
+        boost::asio::ip::tcp::endpoint server_ep_;
+
+        Command cmd_;
+
+        std::array<uint8_t, 8> tx_buff_;
+        std::array<uint8_t, 16> rx_buff_;
+        std::mutex rx_buff_mutex_;
+};
+
+#endif // __TCP_CLIENT_HPP__
