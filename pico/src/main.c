@@ -13,6 +13,11 @@
 #include "server.h"
 
 Server server = {0};
+BNO055 imu = {
+    .inst = i2c0,
+    .addr = 0x28,
+    .primary_mode = NDOF
+};
 
 int connectWifi(void) {
     if (cyw43_arch_init()) {
@@ -21,7 +26,7 @@ int connectWifi(void) {
 
     cyw43_arch_enable_sta_mode();
 
-    int res = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWD, CYW43_AUTH_WPA2_AES_PSK, 30000);
+    int res = cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWD, CYW43_AUTH_WPA2_AES_PSK, 15000);
     if (res) {
         watchdog_enable(5 * 1000, true);
         return 2;
@@ -30,8 +35,35 @@ int connectWifi(void) {
     return 0;
 }
 
+void callback(void *arg) {
+    printf("server callback\r\n");
+    Server *srv = (Server*)arg;
+
+    for (int i = 0; i < TX_BUFF_SZ; i++) {
+        srv->tx_buff[i] = 0;
+    }
+
+    switch (srv->cmd) {
+        case READ_IMU:
+            printf("read imu cmd\r\n");
+            readIMU(&imu);
+            memcpy(srv->tx_buff, imu.euler, 6);
+            break;
+        case GET_IMU_STATUS:
+            obtainStatus(&imu, &(srv->tx_buff[0]), &(srv->tx_buff[1]), &(srv->tx_buff[2]));
+            break;
+        case PING:
+            printf("ping cmd\r\n");
+            memcpy(srv->tx_buff, "pong\r\n", 6);
+            break;
+        default:
+            break;
+    }
+}
+
 int main(void) {
     stdio_init_all();
+    sleep_ms(5000);
 
     if (watchdog_caused_reboot()) {
         printf("Reseted by watchdog\r\n");
@@ -70,20 +102,10 @@ int main(void) {
 
     watchdog_update();
 
-    BNO055 imu = {
-      .inst = i2c0,
-      .addr = 0x28,
-      .primary_mode = NDOF
-    };
-
-    uint8_t imu_calib_stat = 0;
-    uint8_t imu_sys_stat = 0;
-    uint8_t imu_sys_err = 0;
-
     setupIMU(&imu);
     setupLightSensor();
 
-    err_t e = server_init(&server);
+    err_t e = server_init(&server, callback);
 
     if (e != ERR_OK) {
         printf("Failed to initialize server, restarting...\r\n");
@@ -92,16 +114,7 @@ int main(void) {
     }
 
     while (1) {
-        const float conv_factor = 3.3f / (1 << 12);
-        uint16_t l = readAVG();
-        obtainStatus(&imu, &imu_calib_stat, &imu_sys_stat, &imu_sys_err);
-        readIMU(&imu);
-        /*
-        printf("Result: %02X, %f V\n", l, l * conv_factor);
-        printf("IMU Calib: %02X, IMU STAT: %02X, IMU ERR: %02X\n", imu_calib_stat, imu_sys_stat, imu_sys_err);
-        printf("IMU Euler: %f, %f, %f\n", imu.euler[0] / 16.f, imu.euler[1] / 16.f, imu.euler[2] / 16.f);
-        */
-        sleep_ms(100);
+        sleep_ms(10);
         watchdog_update();
     }
 

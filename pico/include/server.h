@@ -10,8 +10,21 @@
 #define TX_BUFF_SZ 16
 #define RX_BUFF_SZ 8
 
+#define PING_PACKET_TX_LEN 7
+#define READ_IMU_PACKET_TX_LEN 6
+#define GET_IMU_STATUS_PACKET_TX_LEN 3
+#define LOAD_CALIB_PACKET_TX_LEN 1
+#define SAVE_CALIB_PACKET_TX_LEN 1
+#define SEARCH_SUN_PACKET_TX_LEN 1
+#define START_SELF_CHARGE_PACKET_TX_LEN 1
+#define START_POWER_TRANS_PACKET_TX_LEN 1
+#define STOP_GENERATOR_PACKET_TX_LEN 1
+
+typedef void (*Data_Preparation_Callback)(void*);
+
 typedef enum {
     READ_IMU,
+    GET_IMU_STATUS,
     LOAD_CALIB,
     SAVE_CALIB,
     SEARCH_SUN,
@@ -19,6 +32,7 @@ typedef enum {
     START_POWER_TRANS,
     STOP_GENERATOR,
     PING,
+    NUM_COMMAND
 } Command;
 
 typedef struct {
@@ -30,10 +44,10 @@ typedef struct {
     uint8_t rx_len;
     uint8_t status;
     Command cmd;
-    bool newCommandIssued;
+    Data_Preparation_Callback cb;
 } Server;
 
-err_t server_init(Server *srv);
+err_t server_init(Server *srv, Data_Preparation_Callback cb);
 static err_t server_close(void *arg);
 static err_t server_accept(void *arg, struct tcp_pcb *newpcb, err_t err);
 static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb);

@@ -1,10 +1,11 @@
 #include "server.h"
+#include <lwip/err.h>
 #include <pico/cyw43_arch.h>
 #include <lwip/tcp.h>
 #include <string.h>
 #include <stdio.h>
 
-err_t server_init(Server *srv) {
+err_t server_init(Server *srv, Data_Preparation_Callback cb) {
     struct tcp_pcb *pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
 
     if (!pcb) {
@@ -26,6 +27,8 @@ err_t server_init(Server *srv) {
 
     tcp_arg(srv->server_pcb, (void*)srv);
     tcp_accept(srv->server_pcb, server_accept);
+
+    srv->cb = cb;
 
     return ERR_OK;
 }
@@ -90,6 +93,7 @@ static err_t server_close(void *arg) {
 
 static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb) {
     printf("Poll\r\n");
+
     return ERR_OK;
 }
 
@@ -103,16 +107,41 @@ static void server_err(void *arg, err_t err) {
 static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb) {
     printf("data_tx\r\n");
     Server *srv = (Server*)arg;
-
-    for (int i = 0; i < TX_BUFF_SZ; i++) {
-        srv->tx_buff[i] = 0;
-    }
     
     uint8_t len = 0;
 
-    if (srv->cmd == PING) {
-        memcpy(srv->tx_buff, "pong\r\n", 6);
-        len = 7;
+    switch (srv->cmd) {
+        case READ_IMU:
+            len = READ_IMU_PACKET_TX_LEN;
+            break;
+        case GET_IMU_STATUS:
+            len = GET_IMU_STATUS_PACKET_TX_LEN;
+            break;
+        case SAVE_CALIB:
+            len = SAVE_CALIB_PACKET_TX_LEN;
+            break;
+        case LOAD_CALIB:
+            len = LOAD_CALIB_PACKET_TX_LEN;
+            break;
+        case START_SELF_CHARGE:
+            len = START_SELF_CHARGE_PACKET_TX_LEN;
+            break;
+        case START_POWER_TRANS:
+            len = START_POWER_TRANS_PACKET_TX_LEN;
+            break;
+        case SEARCH_SUN:
+            len = SEARCH_SUN_PACKET_TX_LEN;
+            break;
+        case STOP_GENERATOR:
+            len = STOP_GENERATOR_PACKET_TX_LEN;
+            break;
+        case PING:
+            len = PING_PACKET_TX_LEN;
+            break;
+        case NUM_COMMAND:
+            return ERR_VAL;
+        default:
+            len = TX_BUFF_SZ;
     }
 
     srv->tx_len = 0;
@@ -153,9 +182,7 @@ static err_t server_rx(void *arg, struct tcp_pcb *conn_pcb, struct pbuf *rx_data
         char *p = (char*)(rx_data->payload);
         srv->cmd = p[0];
 
-        //srv->newCommandIssued = true;
-
-        //while (srv->newCommandIssued) ;
+        (*(srv->cb))(arg);
 
         return server_data_tx(arg, conn_pcb);
     }
