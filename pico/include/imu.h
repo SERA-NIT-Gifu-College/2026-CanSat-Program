@@ -1,13 +1,20 @@
 #ifndef __IMU_H__
 #define __IMU_H__
 
+/**
+ * @file imu.h
+ * @brief IMU controlling functions
+ */
+
 #include <hardware/i2c.h>
 
+/** Union for spliting values for AXIS_MAP_CONFIG and AXIS_MAP_SIGN */
 typedef union {
     uint16_t cfg;
     uint8_t config[2];
 } BNO055_Axis_CFG;
 
+/** List of available I2C registers. Refer Bosch BNO055 datasheet for details. */
 typedef enum {
     PAGE_ID = 0x07,
 
@@ -62,6 +69,7 @@ typedef enum {
     GYR_AM_SET
 } BNO055_Registers;
 
+/** Operation Modes for BNO055 */
 typedef enum {
     CONFIG_MODE,
     ACCONLY,
@@ -78,6 +86,7 @@ typedef enum {
     NDOF
 } BNO055_Operation_Modes;
 
+/** Axis configurations listed in BNO055 datasheet @see BNO055_Axis_CFG */
 typedef enum _ : uint16_t {
   P0 = 0x2104,
   P1 = 0x2400,
@@ -89,6 +98,7 @@ typedef enum _ : uint16_t {
   P7 = 0x2405
 } BNO055_Axis_Presets;
 
+/** Device descriptior for BNO055 */
 typedef struct {
     i2c_inst_t *inst;
     uint8_t addr;
@@ -96,10 +106,35 @@ typedef struct {
     int16_t euler[3];
 } BNO055;
 
+/**
+ * Setup IMU from provided device descriptor
+ * @param imu a pointer to a device descriptor; inst, addr, and primary_mode fields should be filled beforehand
+ */
 void setupIMU(BNO055 *imu);
+/**
+ * Save calibration data
+ * @param imu a pointer to a device descriptor
+ * @param dest a pointer to a 22 byte long array, which calibration data will be saved to
+ */
 void saveCalibration(BNO055 *imu, uint8_t *dest);
+/**
+ * Load calibration data
+ * @param imu a pointer to a device descriptor
+ * @param src a pointer to a 22 byte long array to be loaded from as pre-calibrated data
+ */
 void loadCalibration(BNO055 *imu, uint8_t *src);
+/**
+ * Read IMU's orientation as euler angles
+ * @param imu a pointer to a device descriptor; resulting euler angles are stored in euler field
+ */
 void readIMU(BNO055 *imu);
+/**
+ * Obtain IMU status information
+ * @param imu a pointer to a device descriptor
+ * @param calib a pointer to a byte sized variable storing calibration status
+ * @param ssc a pointer to a byte sized variable storing system status code
+ * @param ser a pointer to a byte sized variable storing system error code
+ */
 void obtainStatus(BNO055 *imu, uint8_t *calib, uint8_t *ssc, uint8_t *ser);
 
 #endif // __IMU_H__

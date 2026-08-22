@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['get_5fimu_5fstatus_0',['GET_IMU_STATUS',['../server_8h.html#a2afce0a47a93eee73a314d53e4890153a29ac2ced11c0b11fe53c68210ab27a19',1,'server.h']]],
+  ['grv_5fdata_5fstart_1',['GRV_DATA_START',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a2c62814c9d27144f0a238394a39c4aaa',1,'imu.h']]],
+  ['gyr_5fam_5fset_2',['GYR_AM_SET',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a8f416bbbd13717f8a3fb336b73245264',1,'imu.h']]],
+  ['gyr_5fam_5fthres_3',['GYR_AM_THRES',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a93b586fa415e666628594f83dd70aa85',1,'imu.h']]],
+  ['gyr_5fconfig_5f0_4',['GYR_CONFIG_0',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a8cdabd3a5c07066af439e2adf36d4dc6',1,'imu.h']]],
+  ['gyr_5fconfig_5f1_5',['GYR_CONFIG_1',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a95dcdbcd0bc217e57159b7d58650fc78',1,'imu.h']]],
+  ['gyr_5fdata_5fstart_6',['GYR_DATA_START',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a3484854e3d95472ecbb62c7de8df93de',1,'imu.h']]],
+  ['gyr_5fdur_5fx_7',['GYR_DUR_X',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192ac27d73faf63655ea3e7b277d791d2c5b',1,'imu.h']]],
+  ['gyr_5fdur_5fy_8',['GYR_DUR_Y',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a14b4174e3d42387ae4c22224f080a382',1,'imu.h']]],
+  ['gyr_5fdur_5fz_9',['GYR_DUR_Z',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a45a6ce6afa830b4fc8d57f5a1c41f2f6',1,'imu.h']]],
+  ['gyr_5fhr_5fx_5fset_10',['GYR_HR_X_SET',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a50d545b085ae33f16c7ea566f1745ed9',1,'imu.h']]],
+  ['gyr_5fhr_5fy_5fset_11',['GYR_HR_Y_SET',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a177dcdcbd133e15b24d8394cb68f30ca',1,'imu.h']]],
+  ['gyr_5fhr_5fz_5fset_12',['GYR_HR_Z_SET',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192a60d9f31823a0a45a12706e81723b7656',1,'imu.h']]],
+  ['gyr_5fint_5fsettings_13',['GYR_INT_SETTINGS',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192af35ba459687205154fa2217eb99e1733',1,'imu.h']]],
+  ['gyr_5fsleep_5fconfig_14',['GYR_SLEEP_CONFIG',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192ac8af115f1821a881bfd9be5d4a82d62b',1,'imu.h']]],
+  ['gyroonly_15',['GYROONLY',['../imu_8h.html#a5c8bc3a20902ab97da718c35df464dc7a0091221945d38ab05c0ff99110fec1d7',1,'imu.h']]]
+];

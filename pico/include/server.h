@@ -1,27 +1,34 @@
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
+/**
+ * @file server.h
+ * @brief Functions for server operation
+ */
+
 #include <pico/cyw43_arch.h>
 #include <lwip/pbuf.h>
 #include <lwip/tcp.h>
 
-#define TCP_PORT 8000
-#define POLL_TIME 5
-#define TX_BUFF_SZ 16
-#define RX_BUFF_SZ 8
+#define TCP_PORT 8000 //!< TCP port on which server runs
+#define POLL_TIME 5 //!< tcp_poll interval time in seconds
+#define TX_BUFF_SZ 16 //!< Transmission buffer size in bytes
+#define RX_BUFF_SZ 8 //!< Recive buffer size in bytes
 
-#define PING_PACKET_TX_LEN 7
-#define READ_IMU_PACKET_TX_LEN 6
-#define GET_IMU_STATUS_PACKET_TX_LEN 3
-#define LOAD_CALIB_PACKET_TX_LEN 1
-#define SAVE_CALIB_PACKET_TX_LEN 1
-#define SEARCH_SUN_PACKET_TX_LEN 1
-#define START_SELF_CHARGE_PACKET_TX_LEN 1
-#define START_POWER_TRANS_PACKET_TX_LEN 1
-#define STOP_GENERATOR_PACKET_TX_LEN 1
+#define PING_PACKET_TX_LEN 7                //!< TX packet size for PING
+#define READ_IMU_PACKET_TX_LEN 6            //!< TX packet size for READ_IMU
+#define GET_IMU_STATUS_PACKET_TX_LEN 3      //!< TX packet size for GET_IMU_STATUS
+#define LOAD_CALIB_PACKET_TX_LEN 1          //!< TX packet size for LOAD_CALIB
+#define SAVE_CALIB_PACKET_TX_LEN 1          //!< TX packet size for SAVE_CALIB
+#define SEARCH_SUN_PACKET_TX_LEN 1          //!< TX packet size for SEARCH_SUN
+#define START_SELF_CHARGE_PACKET_TX_LEN 1   //!< TX packet size for START_SELF_CHARGE
+#define START_POWER_TRANS_PACKET_TX_LEN 1   //!< TX packet size for START_POWER_TRANS
+#define STOP_GENERATOR_PACKET_TX_LEN 1      //!< TX packet size for STOP_GENERATOR
 
+/** Function prototype for callback function */
 typedef void (*Data_Preparation_Callback)(void*);
 
+/** Available commands for this server */
 typedef enum {
     READ_IMU,
     GET_IMU_STATUS,
@@ -35,6 +42,7 @@ typedef enum {
     NUM_COMMAND
 } Command;
 
+/** Server descriptor */
 typedef struct {
     struct tcp_pcb *server_pcb;
     struct tcp_pcb *client_pcb;
@@ -47,14 +55,42 @@ typedef struct {
     Data_Preparation_Callback cb;
 } Server;
 
+/**
+ * Initializes server
+ * @param srv a pointer to a server descriptor
+ * @param cb callback function, called in server_rx @see Data_Preparation_Callback
+ * @return lwip error code
+ */
 err_t server_init(Server *srv, Data_Preparation_Callback cb);
+/**
+ * Closes server and connection between client
+ * @param arg a pointer to a server descriptor
+ * @return lwip error code
+ */
 static err_t server_close(void *arg);
-static err_t server_accept(void *arg, struct tcp_pcb *newpcb, err_t err);
-static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb);
-static void server_err(void *arg, err_t err);
-static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb);
-static err_t server_tx(void *arg, struct tcp_pcb *conn_pcb, uint16_t len);
-static err_t server_rx(void *arg, struct tcp_pcb *conn_pcb, struct pbuf *rx_data, err_t err);
+/**
+ * Closes connection between client
+ * @param arg a pointer to a server descriptor
+ * @return lwip error code
+ */
 static err_t server_client_disconn(void *arg);
+/**
+ * Functions that defines how to transmit data to client
+ * @param arg a pointer to a server descriptor
+ * @param conn_pcb connected client
+ * @return lwip error code
+ */
+static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb);
+
+/** see lwip documentation */
+static err_t server_accept(void *arg, struct tcp_pcb *newpcb, err_t err);
+/** see lwip documentation */
+static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb);
+/** see lwip documentation */
+static void server_err(void *arg, err_t err);
+/** see lwip documentation */
+static err_t server_tx(void *arg, struct tcp_pcb *conn_pcb, uint16_t len);
+/** see lwip documentation */
+static err_t server_rx(void *arg, struct tcp_pcb *conn_pcb, struct pbuf *rx_data, err_t err);
 
 #endif // __SERVER_H__
