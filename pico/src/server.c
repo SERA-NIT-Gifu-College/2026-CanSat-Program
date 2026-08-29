@@ -1,6 +1,7 @@
 #include "server.h"
 #include <lwip/err.h>
 #include <pico/cyw43_arch.h>
+#include <lwip/pbuf.h>
 #include <lwip/tcp.h>
 #include <string.h>
 #include <stdio.h>
@@ -29,12 +30,12 @@ err_t server_init(Server *srv, Data_Preparation_Callback cb) {
     tcp_accept(srv->server_pcb, server_accept);
 
     srv->cb = cb;
+    srv->poll_count = 0;
 
     return ERR_OK;
 }
 
 static err_t server_accept(void *arg, struct tcp_pcb *newpcb, err_t err) {
-    printf("Accept\r\n");
     Server *srv = (Server*)arg;
 
     if (err != ERR_OK || newpcb == NULL) {
@@ -52,16 +53,15 @@ static err_t server_accept(void *arg, struct tcp_pcb *newpcb, err_t err) {
 }
 
 static err_t server_client_disconn(void *arg) {
-    printf("client_disconn\r\n");
     Server *srv = (Server*)arg;
 
     err_t err = ERR_OK;
 
     if (srv->client_pcb != NULL) {
         tcp_arg(srv->client_pcb, NULL);
-        tcp_sent(srv->client_pcb, server_tx);
-        tcp_recv(srv->client_pcb, server_rx);
-        tcp_err(srv->client_pcb, server_err);
+        tcp_sent(srv->client_pcb, NULL);
+        tcp_recv(srv->client_pcb, NULL);
+        tcp_err(srv->client_pcb, NULL);
         tcp_poll(srv->client_pcb, NULL, 0);
         err = tcp_close(srv->client_pcb);
         if (err != ERR_OK) {
@@ -74,8 +74,7 @@ static err_t server_client_disconn(void *arg) {
     return err;
 }
 
-static err_t server_close(void *arg) {
-    printf("Close\r\n");
+err_t server_close(void *arg) {
     Server *srv = (Server*)arg;
 
     err_t err = ERR_OK;
@@ -92,20 +91,29 @@ static err_t server_close(void *arg) {
 }
 
 static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb) {
-    printf("Poll\r\n");
+    Server *srv = (Server*)arg;
+
+    srv->poll_count++;
+
+    if (srv->poll_count > 3) {
+        printf("timeout detected disconnecting...\r\n");
+        srv->poll_count = 0;
+        return server_client_disconn(arg);
+    }
 
     return ERR_OK;
 }
 
 static void server_err(void *arg, err_t err) {
-    printf("Err\r\n");
+    printf("server_err: %d\r\n", err);
     if (err != ERR_ABRT) {
+        printf("Critical Error, restarting server\r\n");
         server_close(arg);
+        server_init((Server*)arg, ((Server*)arg)->cb);
     }
 }
 
 static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb) {
-    printf("data_tx\r\n");
     Server *srv = (Server*)arg;
     
     uint8_t len = 0;
@@ -151,36 +159,37 @@ static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb) {
     err_t err = tcp_write(conn_pcb, srv->tx_buff, len <= TX_BUFF_SZ ? len : TX_BUFF_SZ, TCP_WRITE_FLAG_COPY);
 
     if (err != ERR_OK) {
-        printf("Failed tx: %d\r\n", err);
-        return server_close(arg);
+        printf("Error on sending\r\n");
+        return server_client_disconn(arg);
     }
 
     return ERR_OK;
 }
 
 static err_t server_tx(void *arg, struct tcp_pcb *conn_pcb, uint16_t len) {
-    printf("tx\r\n");
     Server *srv = (Server*)arg;
 
     srv->tx_len += len;
 
-    return server_client_disconn(arg);
+    return ERR_OK;
 }
 
 static err_t server_rx(void *arg, struct tcp_pcb *conn_pcb, struct pbuf *rx_data, err_t err) {
-    printf("rx\r\n");
     Server *srv = (Server*)arg;
 
     if (!rx_data) {
-        printf("rx ERR_VAL\r\n");
+        printf("!rx_data\r\n");
+        (void)server_client_disconn(arg);
         return ERR_VAL;
     }
 
     cyw43_arch_lwip_check();
 
     if (rx_data->tot_len > 0) {
-        char *p = (char*)(rx_data->payload);
-        srv->cmd = p[0];
+        uint8_t *p = (uint8_t*)(rx_data->payload);
+        memcpy(srv->rx_buff, p, RX_BUFF_SZ);
+        pbuf_free(rx_data);
+        srv->cmd = srv->rx_buff[0];
 
         (*(srv->cb))(arg);
 
@@ -188,8 +197,6 @@ static err_t server_rx(void *arg, struct tcp_pcb *conn_pcb, struct pbuf *rx_data
     }
 
     pbuf_free(rx_data);
-
-    printf("rx ERR_OK\r\n");
 
     return ERR_OK;
 }

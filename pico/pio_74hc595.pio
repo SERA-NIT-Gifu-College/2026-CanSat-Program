@@ -1,0 +1,47 @@
+.pio_version 0
+
+.program pio_74hc595
+.wrap_target
+    pull block
+    set x, 7
+lp1:
+    out pins, 1        ; set SER from OSR
+    set pins, 0x01 [2] ; srclk up
+    set pins, 0x00     ; clk down
+    jmp x-- lp1
+    nop
+    set pins, 0x02     ; rclk up
+    set pins, 0x00     ; clk down
+    out pins, 1        ; load 0 (pulls SER low)
+.wrap
+
+% c-sdk {
+typedef struct {
+    PIO pio;
+    uint sm;
+    uint ofst;
+    uint bp;
+} ShiftRegister;
+
+static inline void shiftRegister_put(ShiftRegister *sr, uint8_t data) {
+    pio_sm_put(sr->pio, sr->sm, ((uint32_t)data) << 24);
+}
+
+static inline void pio_74hc595_program_init(ShiftRegister *sr) {
+    // OUT: SER (bp + 2)
+    // SET: SRCLK (bp + 0)
+    // SET: RCLK (bp + 1)
+    pio_sm_config cfg = pio_74hc595_program_get_default_config(sr->ofst);
+    pio_sm_set_consecutive_pindirs(sr->pio, sr->sm, sr->bp, 3, true);
+
+    sm_config_set_set_pins(&cfg, sr->bp, 2);
+    sm_config_set_out_pins(&cfg, sr->bp + 2, 1);
+    sm_config_set_out_shift(&cfg, false, false, 32);
+    for (int i = 0; i < 3; i++)
+        pio_gpio_init(sr->pio, sr->bp + i);
+
+    sm_config_set_clkdiv(&cfg, 1);
+
+    pio_sm_init(sr->pio, sr->sm, sr->ofst, &cfg);
+}
+%}

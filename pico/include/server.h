@@ -51,6 +51,7 @@ typedef struct {
     uint8_t tx_len;
     uint8_t rx_len;
     uint8_t status;
+    uint8_t poll_count;
     Command cmd;
     Data_Preparation_Callback cb;
 } Server;
@@ -67,7 +68,7 @@ err_t server_init(Server *srv, Data_Preparation_Callback cb);
  * @param arg a pointer to a server descriptor
  * @return lwip error code
  */
-static err_t server_close(void *arg);
+err_t server_close(void *arg);
 /**
  * Closes connection between client
  * @param arg a pointer to a server descriptor
