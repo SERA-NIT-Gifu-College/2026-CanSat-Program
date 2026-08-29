@@ -2,26 +2,34 @@ NAME:=cansatClient
 CC:=gcc
 CXX:=g++
 RM:=rm
-CFLAGS:=-O2 -Wall -Wpedantic
-CXXFLAGS:=-O2 -Wall -Wpedantic
+CFLAGS:=-O2 -Wall -Wpedantic -std=c11
+CXXFLAGS:=-O2 -Wall -Wpedantic -std=c++20
 
-LIBS:=$(shell pkg-config --libs --cflags raylib)
+PREFIX:=./build
+
+LIBS:=
 INCL:=$(addprefix -I, \
 	./include/ \
 	./thirdparty/cxxopts/include/ \
 )
 
 SRCS:= \
-	src/client.cpp
+	src/app.cpp \
+	src/tcp_client.cpp
 OBJS:=$(patsubst %.cpp,%.o,${SRCS})
 
 all: ${NAME}
 
 ${NAME}: ${OBJS}
-	${CXX} ${OBJS}
+	@mkdir -p ${PREFIX}
+	${CXX} ${OBJS} -o ${PREFIX}/${NAME}
 
 %.o: %.cpp
 	${CXX} -c ${CXXFLAGS} ${INCL} ${LIBS} $^ -o $@
 
 clean:
-	${RM} ${OBJS} ${NAME}
+	${RM} ${OBJS}
+
+clean-all:
+	${RM} ${OBJS}
+	${RM} -dr ${PREFIX}

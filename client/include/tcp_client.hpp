@@ -25,10 +25,10 @@ class TCP_Client {
 
         TCP_Client(boost::asio::io_context &ctx, std::string &addr_str, unsigned int port);
 
-        std::optional<std::shared_ptr<std::array<uint8_t, 16>>> sendCommand(Command cmd);
+        std::optional<std::array<uint8_t, 16>> sendCommand(Command cmd);
     private:
-        void do_rx();
-        void do_tx();
+        int do_rx();
+        int do_tx();
 
         boost::asio::ip::tcp::socket sckt_;
         boost::asio::ip::tcp::endpoint server_ep_;

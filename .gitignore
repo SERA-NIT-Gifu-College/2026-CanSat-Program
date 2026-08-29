@@ -1,2 +1,4 @@
 pico/build
 pico/.cache
+client/build
+*.o
