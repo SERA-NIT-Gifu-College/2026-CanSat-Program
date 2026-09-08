@@ -9,8 +9,9 @@ TCP_Client::TCP_Client(io_context &ctx, std::string &addr_str, unsigned int port
     server_ep_(boost::asio::ip::make_address(addr_str), port)
 {}
 
-std::optional<std::array<uint8_t, 16>> TCP_Client::sendCommand(TCP_Client::Command cmd) {
+std::optional<std::array<uint8_t, 16>> TCP_Client::sendCommand(TCP_Client::Command cmd, uint8_t option) {
     cmd_ = cmd;
+    option_ = option;
     int res = 0;
     res += do_tx();
     res += do_rx() << 1;
@@ -43,6 +44,7 @@ int TCP_Client::do_tx() {
     try {
         sckt_.connect(server_ep_);
         tx_buff_[0] = (uint8_t)cmd_;
+        tx_buff_[1] = option_;
         sckt_.write_some(boost::asio::buffer(tx_buff_));
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
