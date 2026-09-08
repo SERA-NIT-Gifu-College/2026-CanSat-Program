@@ -133,64 +133,70 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('server_8h_sour
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="server_8h.html#a0895d62bf7232a1651c9560347573ca2">   16</a></span><span class="preprocessor">#define RX_BUFF_SZ 8 </span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="server_8h.html#a5d04c4d5b624d61083b2f38b1c19dedc">   18</a></span><span class="preprocessor">#define PING_PACKET_TX_LEN 7                </span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="server_8h.html#a7b39336a782099cf0ff6f3137930627a">   19</a></span><span class="preprocessor">#define READ_IMU_PACKET_TX_LEN 6            </span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="server_8h.html#a32d5e8ba19fd70aa685f48d12b0270bf">   20</a></span><span class="preprocessor">#define GET_IMU_STATUS_PACKET_TX_LEN 3      </span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="server_8h.html#a923a2fb14767bd2075c6b9c46b01a525">   21</a></span><span class="preprocessor">#define LOAD_CALIB_PACKET_TX_LEN 1          </span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="server_8h.html#aab95864b17dd6f5676f552c763707e3e">   22</a></span><span class="preprocessor">#define SAVE_CALIB_PACKET_TX_LEN 1          </span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="server_8h.html#a55ab8f8d67815798baa3f8609220fc50">   23</a></span><span class="preprocessor">#define SEARCH_SUN_PACKET_TX_LEN 1          </span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="server_8h.html#a04d4f744988d1b28002e4eb33a49e7e5">   24</a></span><span class="preprocessor">#define START_SELF_CHARGE_PACKET_TX_LEN 1   </span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="server_8h.html#a0c28ddf2aa38e67db0bafdf085905153">   25</a></span><span class="preprocessor">#define START_POWER_TRANS_PACKET_TX_LEN 1   </span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="server_8h.html#a5d2f108b09edf6cab86a3dacafd5e95c">   26</a></span><span class="preprocessor">#define STOP_GENERATOR_PACKET_TX_LEN 1      </span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">   29</a></span><span class="keyword">typedef</span> void (*<a class="code hl_typedef" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a>)(<span class="keywordtype">void</span>*);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
-<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">   32</a></span><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    READ_IMU,</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    GET_IMU_STATUS,</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    LOAD_CALIB,</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    SAVE_CALIB,</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    SEARCH_SUN,</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    START_SELF_CHARGE,</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    START_POWER_TRANS,</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    STOP_GENERATOR,</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    PING,</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    NUM_COMMAND</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>} <a class="code hl_enumeration" href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">Command</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="server_8h.html#a00dca0ab8b1ac1c0ba3af2b515dd8005">   19</a></span><span class="preprocessor">#define GET_TELEMETRY_PACKET_TX_LEN 16      </span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="server_8h.html#a923a2fb14767bd2075c6b9c46b01a525">   20</a></span><span class="preprocessor">#define LOAD_CALIB_PACKET_TX_LEN 1          </span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="server_8h.html#aab95864b17dd6f5676f552c763707e3e">   21</a></span><span class="preprocessor">#define SAVE_CALIB_PACKET_TX_LEN 1          </span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="server_8h.html#a55ab8f8d67815798baa3f8609220fc50">   22</a></span><span class="preprocessor">#define SEARCH_SUN_PACKET_TX_LEN 1          </span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">   25</a></span><span class="keyword">typedef</span> void (*<a class="code hl_typedef" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a>)(<span class="keywordtype">void</span>*);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span></div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">   28</a></span><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    GET_TELEMETRY,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    LOAD_CALIB,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    SAVE_CALIB,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    SEARCH_SUN,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    PING,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    NUM_COMMAND</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>} <a class="code hl_enumeration" href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">Command</a>;</div>
 </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span></div>
-<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structServer.html">   46</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">struct </span>tcp_pcb *server_pcb;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">struct </span>tcp_pcb *client_pcb;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    uint8_t tx_buff[<a class="code hl_define" href="server_8h.html#adc755d60a37aa9ec6f622b4a1a40dc68">TX_BUFF_SZ</a>];</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    uint8_t rx_buff[<a class="code hl_define" href="server_8h.html#a0895d62bf7232a1651c9560347573ca2">RX_BUFF_SZ</a>];</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    uint8_t tx_len;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    uint8_t rx_len;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    uint8_t status;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_enumeration" href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">Command</a> cmd;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_typedef" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a> cb;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <a class="code hl_struct" href="structServer.html">Server</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structTelemetry.html">   38</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    uint16_t euler_raw[3];</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    uint16_t light_sensor_raw;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    uint16_t solar_cell_raw;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    uint8_t imu_status;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    uint8_t imu_error;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    uint8_t imu_calib;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>} <a class="code hl_struct" href="structTelemetry.html">Telemetry</a>;</div>
 </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>err_t <a class="code hl_function" href="server_8h.html#abad8fd2780e63323efd82ae22c2c69f6">server_init</a>(<a class="code hl_struct" href="structServer.html">Server</a> *srv, <a class="code hl_typedef" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a> cb);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">static</span> err_t server_close(<span class="keywordtype">void</span> *arg);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">static</span> err_t server_client_disconn(<span class="keywordtype">void</span> *arg);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">static</span> err_t server_data_tx(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">static</span> err_t server_accept(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *newpcb, err_t err);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">static</span> err_t server_poll(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">static</span> <span class="keywordtype">void</span> server_err(<span class="keywordtype">void</span> *arg, err_t err);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">static</span> err_t server_tx(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb, uint16_t len);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keyword">static</span> err_t server_rx(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb, <span class="keyword">struct</span> pbuf *rx_data, err_t err);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#endif </span><span class="comment">// __SERVER_H__</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structServer.html">   48</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">struct </span>tcp_pcb *server_pcb;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">struct </span>tcp_pcb *client_pcb;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    uint8_t tx_buff[<a class="code hl_define" href="server_8h.html#adc755d60a37aa9ec6f622b4a1a40dc68">TX_BUFF_SZ</a>];</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    uint8_t rx_buff[<a class="code hl_define" href="server_8h.html#a0895d62bf7232a1651c9560347573ca2">RX_BUFF_SZ</a>];</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    uint8_t tx_len;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    uint8_t rx_len;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    uint8_t status;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    uint8_t poll_count;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_enumeration" href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">Command</a> cmd;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_typedef" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a> cb;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>} <a class="code hl_struct" href="structServer.html">Server</a>;</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>err_t <a class="code hl_function" href="server_8h.html#abad8fd2780e63323efd82ae22c2c69f6">server_init</a>(<a class="code hl_struct" href="structServer.html">Server</a> *srv, <a class="code hl_typedef" href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a> cb);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>err_t <a class="code hl_function" href="server_8h.html#ac5a72e5ec9069c64765096ea76b6c921">server_close</a>(<span class="keywordtype">void</span> *arg);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keyword">static</span> err_t server_client_disconn(<span class="keywordtype">void</span> *arg);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">static</span> err_t server_data_tx(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">static</span> err_t server_accept(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *newpcb, err_t err);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">static</span> err_t server_poll(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">static</span> <span class="keywordtype">void</span> server_err(<span class="keywordtype">void</span> *arg, err_t err);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">static</span> err_t server_tx(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb, uint16_t len);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keyword">static</span> err_t server_rx(<span class="keywordtype">void</span> *arg, <span class="keyword">struct</span> tcp_pcb *conn_pcb, <span class="keyword">struct</span> pbuf *rx_data, err_t err);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">#endif </span><span class="comment">// __SERVER_H__</span></div>
 <div class="ttc" id="aserver_8h_html_a0895d62bf7232a1651c9560347573ca2"><div class="ttname"><a href="server_8h.html#a0895d62bf7232a1651c9560347573ca2">RX_BUFF_SZ</a></div><div class="ttdeci">#define RX_BUFF_SZ</div><div class="ttdoc">Recive buffer size in bytes.</div><div class="ttdef"><b>Definition</b> server.h:16</div></div>
-<div class="ttc" id="aserver_8h_html_a2afce0a47a93eee73a314d53e4890153"><div class="ttname"><a href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">Command</a></div><div class="ttdeci">Command</div><div class="ttdef"><b>Definition</b> server.h:32</div></div>
-<div class="ttc" id="aserver_8h_html_a9db83ac17339ebff5ab0c6d338218b07"><div class="ttname"><a href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a></div><div class="ttdeci">void(* Data_Preparation_Callback)(void *)</div><div class="ttdef"><b>Definition</b> server.h:29</div></div>
-<div class="ttc" id="aserver_8h_html_abad8fd2780e63323efd82ae22c2c69f6"><div class="ttname"><a href="server_8h.html#abad8fd2780e63323efd82ae22c2c69f6">server_init</a></div><div class="ttdeci">err_t server_init(Server *srv, Data_Preparation_Callback cb)</div><div class="ttdef"><b>Definition</b> server.c:8</div></div>
+<div class="ttc" id="aserver_8h_html_a2afce0a47a93eee73a314d53e4890153"><div class="ttname"><a href="server_8h.html#a2afce0a47a93eee73a314d53e4890153">Command</a></div><div class="ttdeci">Command</div><div class="ttdef"><b>Definition</b> server.h:28</div></div>
+<div class="ttc" id="aserver_8h_html_a9db83ac17339ebff5ab0c6d338218b07"><div class="ttname"><a href="server_8h.html#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a></div><div class="ttdeci">void(* Data_Preparation_Callback)(void *)</div><div class="ttdef"><b>Definition</b> server.h:25</div></div>
+<div class="ttc" id="aserver_8h_html_abad8fd2780e63323efd82ae22c2c69f6"><div class="ttname"><a href="server_8h.html#abad8fd2780e63323efd82ae22c2c69f6">server_init</a></div><div class="ttdeci">err_t server_init(Server *srv, Data_Preparation_Callback cb)</div><div class="ttdef"><b>Definition</b> server.c:17</div></div>
+<div class="ttc" id="aserver_8h_html_ac5a72e5ec9069c64765096ea76b6c921"><div class="ttname"><a href="server_8h.html#ac5a72e5ec9069c64765096ea76b6c921">server_close</a></div><div class="ttdeci">err_t server_close(void *arg)</div><div class="ttdef"><b>Definition</b> server.c:85</div></div>
 <div class="ttc" id="aserver_8h_html_adc755d60a37aa9ec6f622b4a1a40dc68"><div class="ttname"><a href="server_8h.html#adc755d60a37aa9ec6f622b4a1a40dc68">TX_BUFF_SZ</a></div><div class="ttdeci">#define TX_BUFF_SZ</div><div class="ttdoc">Transmission buffer size in bytes.</div><div class="ttdef"><b>Definition</b> server.h:15</div></div>
-<div class="ttc" id="astructServer_html"><div class="ttname"><a href="structServer.html">Server</a></div><div class="ttdef"><b>Definition</b> server.h:46</div></div>
+<div class="ttc" id="astructServer_html"><div class="ttname"><a href="structServer.html">Server</a></div><div class="ttdef"><b>Definition</b> server.h:48</div></div>
+<div class="ttc" id="astructTelemetry_html"><div class="ttname"><a href="structTelemetry.html">Telemetry</a></div><div class="ttdef"><b>Definition</b> server.h:38</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

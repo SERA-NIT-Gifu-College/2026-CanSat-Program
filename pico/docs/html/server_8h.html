@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('server_8h.html
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:Telemetry" id="r_Telemetry"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structTelemetry.html">Telemetry</a></td></tr>
 <tr class="memitem:Server" id="r_Server"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structServer.html">Server</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
@@ -149,12 +150,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a5d04c4d5b624d61083b2f38b1c19dedc" id="r_a5d04c4d5b624d61083b2f38b1c19dedc"><td class="memItemLeft"><a id="a5d04c4d5b624d61083b2f38b1c19dedc" name="a5d04c4d5b624d61083b2f38b1c19dedc"></a>
 #define&#160;</td><td class="memItemRight"><b>PING_PACKET_TX_LEN</b>&#160;&#160;&#160;7</td></tr>
 <tr class="memdesc:a5d04c4d5b624d61083b2f38b1c19dedc"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for PING. <br /></td></tr>
-<tr class="memitem:a7b39336a782099cf0ff6f3137930627a" id="r_a7b39336a782099cf0ff6f3137930627a"><td class="memItemLeft"><a id="a7b39336a782099cf0ff6f3137930627a" name="a7b39336a782099cf0ff6f3137930627a"></a>
-#define&#160;</td><td class="memItemRight"><b>READ_IMU_PACKET_TX_LEN</b>&#160;&#160;&#160;6</td></tr>
-<tr class="memdesc:a7b39336a782099cf0ff6f3137930627a"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for READ_IMU. <br /></td></tr>
-<tr class="memitem:a32d5e8ba19fd70aa685f48d12b0270bf" id="r_a32d5e8ba19fd70aa685f48d12b0270bf"><td class="memItemLeft"><a id="a32d5e8ba19fd70aa685f48d12b0270bf" name="a32d5e8ba19fd70aa685f48d12b0270bf"></a>
-#define&#160;</td><td class="memItemRight"><b>GET_IMU_STATUS_PACKET_TX_LEN</b>&#160;&#160;&#160;3</td></tr>
-<tr class="memdesc:a32d5e8ba19fd70aa685f48d12b0270bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for GET_IMU_STATUS. <br /></td></tr>
+<tr class="memitem:a00dca0ab8b1ac1c0ba3af2b515dd8005" id="r_a00dca0ab8b1ac1c0ba3af2b515dd8005"><td class="memItemLeft"><a id="a00dca0ab8b1ac1c0ba3af2b515dd8005" name="a00dca0ab8b1ac1c0ba3af2b515dd8005"></a>
+#define&#160;</td><td class="memItemRight"><b>GET_TELEMETRY_PACKET_TX_LEN</b>&#160;&#160;&#160;16</td></tr>
+<tr class="memdesc:a00dca0ab8b1ac1c0ba3af2b515dd8005"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for READ_IMU. <br /></td></tr>
 <tr class="memitem:a923a2fb14767bd2075c6b9c46b01a525" id="r_a923a2fb14767bd2075c6b9c46b01a525"><td class="memItemLeft"><a id="a923a2fb14767bd2075c6b9c46b01a525" name="a923a2fb14767bd2075c6b9c46b01a525"></a>
 #define&#160;</td><td class="memItemRight"><b>LOAD_CALIB_PACKET_TX_LEN</b>&#160;&#160;&#160;1</td></tr>
 <tr class="memdesc:a923a2fb14767bd2075c6b9c46b01a525"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for LOAD_CALIB. <br /></td></tr>
@@ -164,15 +162,6 @@ Macros</h2></td></tr>
 <tr class="memitem:a55ab8f8d67815798baa3f8609220fc50" id="r_a55ab8f8d67815798baa3f8609220fc50"><td class="memItemLeft"><a id="a55ab8f8d67815798baa3f8609220fc50" name="a55ab8f8d67815798baa3f8609220fc50"></a>
 #define&#160;</td><td class="memItemRight"><b>SEARCH_SUN_PACKET_TX_LEN</b>&#160;&#160;&#160;1</td></tr>
 <tr class="memdesc:a55ab8f8d67815798baa3f8609220fc50"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for SEARCH_SUN. <br /></td></tr>
-<tr class="memitem:a04d4f744988d1b28002e4eb33a49e7e5" id="r_a04d4f744988d1b28002e4eb33a49e7e5"><td class="memItemLeft"><a id="a04d4f744988d1b28002e4eb33a49e7e5" name="a04d4f744988d1b28002e4eb33a49e7e5"></a>
-#define&#160;</td><td class="memItemRight"><b>START_SELF_CHARGE_PACKET_TX_LEN</b>&#160;&#160;&#160;1</td></tr>
-<tr class="memdesc:a04d4f744988d1b28002e4eb33a49e7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for START_SELF_CHARGE. <br /></td></tr>
-<tr class="memitem:a0c28ddf2aa38e67db0bafdf085905153" id="r_a0c28ddf2aa38e67db0bafdf085905153"><td class="memItemLeft"><a id="a0c28ddf2aa38e67db0bafdf085905153" name="a0c28ddf2aa38e67db0bafdf085905153"></a>
-#define&#160;</td><td class="memItemRight"><b>START_POWER_TRANS_PACKET_TX_LEN</b>&#160;&#160;&#160;1</td></tr>
-<tr class="memdesc:a0c28ddf2aa38e67db0bafdf085905153"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for START_POWER_TRANS. <br /></td></tr>
-<tr class="memitem:a5d2f108b09edf6cab86a3dacafd5e95c" id="r_a5d2f108b09edf6cab86a3dacafd5e95c"><td class="memItemLeft"><a id="a5d2f108b09edf6cab86a3dacafd5e95c" name="a5d2f108b09edf6cab86a3dacafd5e95c"></a>
-#define&#160;</td><td class="memItemRight"><b>STOP_GENERATOR_PACKET_TX_LEN</b>&#160;&#160;&#160;1</td></tr>
-<tr class="memdesc:a5d2f108b09edf6cab86a3dacafd5e95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">TX packet size for STOP_GENERATOR. <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -181,15 +170,10 @@ Typedefs</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:a2afce0a47a93eee73a314d53e4890153" id="r_a2afce0a47a93eee73a314d53e4890153"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a2afce0a47a93eee73a314d53e4890153">Command</a> { <br />
-&#160;&#160;<b>READ_IMU</b>
-, <b>GET_IMU_STATUS</b>
+&#160;&#160;<b>GET_TELEMETRY</b>
 , <b>LOAD_CALIB</b>
 , <b>SAVE_CALIB</b>
-, <br />
-&#160;&#160;<b>SEARCH_SUN</b>
-, <b>START_SELF_CHARGE</b>
-, <b>START_POWER_TRANS</b>
-, <b>STOP_GENERATOR</b>
+, <b>SEARCH_SUN</b>
 , <br />
 &#160;&#160;<b>PING</b>
 , <b>NUM_COMMAND</b>
@@ -199,6 +183,7 @@ Enumerations</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:abad8fd2780e63323efd82ae22c2c69f6" id="r_abad8fd2780e63323efd82ae22c2c69f6"><td class="memItemLeft">err_t&#160;</td><td class="memItemRight"><a class="el" href="#abad8fd2780e63323efd82ae22c2c69f6">server_init</a> (<a class="el" href="structServer.html">Server</a> *srv, <a class="el" href="#a9db83ac17339ebff5ab0c6d338218b07">Data_Preparation_Callback</a> cb)</td></tr>
+<tr class="memitem:ac5a72e5ec9069c64765096ea76b6c921" id="r_ac5a72e5ec9069c64765096ea76b6c921"><td class="memItemLeft">err_t&#160;</td><td class="memItemRight"><a class="el" href="#ac5a72e5ec9069c64765096ea76b6c921">server_close</a> (void *arg)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions for server operation. </p>
@@ -235,6 +220,30 @@ Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="ac5a72e5ec9069c64765096ea76b6c921" name="ac5a72e5ec9069c64765096ea76b6c921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a72e5ec9069c64765096ea76b6c921">&#9670;&#160;</a></span>server_close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">err_t server_close </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>arg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Closes server and connection between client </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arg</td><td>a pointer to a server descriptor </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>lwip error code </dd></dl>
+
+</div>
+</div>
 <a id="abad8fd2780e63323efd82ae22c2c69f6" name="abad8fd2780e63323efd82ae22c2c69f6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abad8fd2780e63323efd82ae22c2c69f6">&#9670;&#160;</a></span>server_init()</h2>
 
