@@ -16,31 +16,33 @@
 #define RX_BUFF_SZ 8 //!< Recive buffer size in bytes
 
 #define PING_PACKET_TX_LEN 7                //!< TX packet size for PING
-#define READ_IMU_PACKET_TX_LEN 6            //!< TX packet size for READ_IMU
-#define GET_IMU_STATUS_PACKET_TX_LEN 3      //!< TX packet size for GET_IMU_STATUS
+#define GET_TELEMETRY_PACKET_TX_LEN 16      //!< TX packet size for READ_IMU
 #define LOAD_CALIB_PACKET_TX_LEN 1          //!< TX packet size for LOAD_CALIB
 #define SAVE_CALIB_PACKET_TX_LEN 1          //!< TX packet size for SAVE_CALIB
 #define SEARCH_SUN_PACKET_TX_LEN 1          //!< TX packet size for SEARCH_SUN
-#define START_SELF_CHARGE_PACKET_TX_LEN 1   //!< TX packet size for START_SELF_CHARGE
-#define START_POWER_TRANS_PACKET_TX_LEN 1   //!< TX packet size for START_POWER_TRANS
-#define STOP_GENERATOR_PACKET_TX_LEN 1      //!< TX packet size for STOP_GENERATOR
 
 /** Function prototype for callback function */
 typedef void (*Data_Preparation_Callback)(void*);
 
 /** Available commands for this server */
 typedef enum {
-    READ_IMU,
-    GET_IMU_STATUS,
+    GET_TELEMETRY,
     LOAD_CALIB,
     SAVE_CALIB,
     SEARCH_SUN,
-    START_SELF_CHARGE,
-    START_POWER_TRANS,
-    STOP_GENERATOR,
     PING,
     NUM_COMMAND
 } Command;
+
+/** Telemetry packet definition */
+typedef struct {
+    uint16_t euler_raw[3];
+    uint16_t light_sensor_raw;
+    uint16_t solar_cell_raw;
+    uint8_t imu_status;
+    uint8_t imu_error;
+    uint8_t imu_calib;
+} Telemetry;
 
 /** Server descriptor */
 typedef struct {

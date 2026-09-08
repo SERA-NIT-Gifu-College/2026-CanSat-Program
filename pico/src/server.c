@@ -6,6 +6,14 @@
 #include <string.h>
 #include <stdio.h>
 
+static uint8_t cmd_tx_lens[NUM_COMMAND] = {
+    GET_TELEMETRY_PACKET_TX_LEN,
+    LOAD_CALIB_PACKET_TX_LEN,
+    SAVE_CALIB_PACKET_TX_LEN,
+    SEARCH_SUN_PACKET_TX_LEN,
+    PING_PACKET_TX_LEN
+};
+
 err_t server_init(Server *srv, Data_Preparation_Callback cb) {
     struct tcp_pcb *pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
 
@@ -118,41 +126,9 @@ static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb) {
     
     uint8_t len = 0;
 
-    switch (srv->cmd) {
-        case READ_IMU:
-            len = READ_IMU_PACKET_TX_LEN;
-            break;
-        case GET_IMU_STATUS:
-            len = GET_IMU_STATUS_PACKET_TX_LEN;
-            break;
-        case SAVE_CALIB:
-            len = SAVE_CALIB_PACKET_TX_LEN;
-            break;
-        case LOAD_CALIB:
-            len = LOAD_CALIB_PACKET_TX_LEN;
-            break;
-        case START_SELF_CHARGE:
-            len = START_SELF_CHARGE_PACKET_TX_LEN;
-            break;
-        case START_POWER_TRANS:
-            len = START_POWER_TRANS_PACKET_TX_LEN;
-            break;
-        case SEARCH_SUN:
-            len = SEARCH_SUN_PACKET_TX_LEN;
-            break;
-        case STOP_GENERATOR:
-            len = STOP_GENERATOR_PACKET_TX_LEN;
-            break;
-        case PING:
-            len = PING_PACKET_TX_LEN;
-            break;
-        case NUM_COMMAND:
-            return ERR_VAL;
-        default:
-            len = TX_BUFF_SZ;
-    }
-
     srv->tx_len = 0;
+
+    len = cmd_tx_lens[srv->cmd];
 
     cyw43_arch_lwip_check();
 

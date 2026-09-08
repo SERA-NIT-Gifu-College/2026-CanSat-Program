@@ -1,6 +1,8 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#include "server.h"
+
 /**
  * @file main.h
  * @brief Major functionalities
@@ -13,12 +15,11 @@
 int connectWifi(void);
 
 /**
- * Put pico into deep sleep with specified time and chip enable state
- * @param ms Time period in millisecond to put in deep sleep
- * @param ce Chip enable state @see Chips
- * @return 0 in success, 1 in failiure
+ * Serializes telemetry structure into byte stream
+ * @param t A pointer to telemetry structure
+ * @param b A pointer to byte-sized buffer to be written
  */
-int go_sleep(uint32_t ms, uint8_t ce);
+void serializeTelemetry(Telemetry *t, uint8_t *b);
 
 /**
  * A callback for server, executes different set of commands depending on recived command

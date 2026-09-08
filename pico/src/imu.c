@@ -54,10 +54,10 @@ void loadCalibration(BNO055 *imu, uint8_t *src) {
     sleep_ms(100);
 }
 
-void readIMU(BNO055 *imu) {
+void readIMU(BNO055 *imu, uint16_t euler[3]) {
     uint8_t reg = EUL_DATA_START;
     i2c_write_blocking(imu->inst, imu->addr, &reg, 1, true);
-    i2c_read_blocking(imu->inst, imu->addr, (uint8_t*)imu->euler, 6, false);
+    i2c_read_blocking(imu->inst, imu->addr, (uint8_t*)(&(euler[0])), 6, false);
 }
 
 void obtainStatus(BNO055 *imu, uint8_t *calib, uint8_t *ssc, uint8_t *ser) {

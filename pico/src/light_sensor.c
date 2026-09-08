@@ -2,7 +2,6 @@
 #include <pico/stdlib.h>
 
 void setupLightSensor() {
-    adc_init();
     adc_gpio_init(26 + LIGHT_SENSOR_ADC_NUM);
 }
 

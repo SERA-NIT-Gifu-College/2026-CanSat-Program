@@ -103,7 +103,6 @@ typedef struct {
     i2c_inst_t *inst;
     uint8_t addr;
     BNO055_Operation_Modes primary_mode;
-    int16_t euler[3];
 } BNO055;
 
 /**
@@ -125,9 +124,10 @@ void saveCalibration(BNO055 *imu, uint8_t *dest);
 void loadCalibration(BNO055 *imu, uint8_t *src);
 /**
  * Read IMU's orientation as euler angles
- * @param imu a pointer to a device descriptor; resulting euler angles are stored in euler field
+ * @param imu a pointer to a device descriptor
+ * @param euler an array of three integers representing euler angle as raw bytes
  */
-void readIMU(BNO055 *imu);
+void readIMU(BNO055 *imu, uint16_t euler[3]);
 /**
  * Obtain IMU status information
  * @param imu a pointer to a device descriptor
