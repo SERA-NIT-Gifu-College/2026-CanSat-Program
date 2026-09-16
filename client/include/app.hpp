@@ -4,7 +4,7 @@
 #include "tcp_client.hpp"
 
 auto ping(int count, int interval, TCP_Client &c) -> int;
-auto get_telemetry(TCP_Client &c) -> int;
+auto get_telemetry(int interval, TCP_Client &c) -> int;
 
 auto main(int argc, char **argv) -> int;
 
