@@ -20,6 +20,8 @@
 #define LOAD_CALIB_PACKET_TX_LEN 1          //!< TX packet size for LOAD_CALIB
 #define SAVE_CALIB_PACKET_TX_LEN 1          //!< TX packet size for SAVE_CALIB
 #define SEARCH_SUN_PACKET_TX_LEN 1          //!< TX packet size for SEARCH_SUN
+#define MOVE_PACKET_TX_LEN 1                //!< TX packet size for MOVE
+#define TOGGLE_WPT_PACKET_TX_LEN 1          //!< TX packet size for TOGGLE_WPT
 
 /** Function prototype for callback function */
 typedef void (*Data_Preparation_Callback)(void*);
@@ -30,6 +32,8 @@ typedef enum {
     LOAD_CALIB,
     SAVE_CALIB,
     SEARCH_SUN,
+    MOVE,
+    TOGGLE_WPT,
     PING,
     NUM_COMMAND
 } Command;

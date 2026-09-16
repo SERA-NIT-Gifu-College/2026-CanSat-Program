@@ -16,6 +16,7 @@ set(SRCS
     src/imu.c
     src/light_sensor.c
     src/main.c
+    src/motor.c
     src/server.c
     src/solar.c
 )
