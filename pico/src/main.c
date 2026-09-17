@@ -199,8 +199,12 @@ int main(void) {
     pannel.ch = PWM_CHAN_A;
     motor_stat = true;
     enableChips(motor_stat, wpt_stat, imu_stat);
-    initServo(&pannel, 2.5f * 1000 * 1000, 500, 2500);
-    printf("%d, %d, %d\r\n", pannel.cycles, pannel.c_base, pannel.wrap_val);
+    initServo(&pannel, 50, 500, 2500);
+    printf("current cycle: %f\r\nbase cycle: %d\r\nwrap value: %d\r\n",
+        pannel.cycles,
+        pannel.c_base,
+        pannel.wrap_val
+    );
 
     printf("Setting up Server...\r\n");
     err_t e = server_init(&server, callback);
@@ -219,14 +223,12 @@ int main(void) {
     printf("Complete!\r\n");
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    //uint16_t ang[4] = {90, 180, 270, 360};
-    //uint8_t i = 0;
+    uint16_t ang[5] = {0, 90, 180, 270, 360};
+    uint8_t i = 0;
     while (1) {
-        /*
         setOnCycles(&pannel, ang[i]);
         i++;
-        if (i == 4) i = 0;
-        */
+        if (i == 5) i = 0;
         sleep_ms(500);
         watchdog_update();
     }

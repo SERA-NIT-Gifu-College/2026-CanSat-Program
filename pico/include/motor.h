@@ -8,11 +8,13 @@
 
 #include <stdint.h>
 
-#define GAIN_P 1.0f                 //!< Proportional gain for wheel drive
-#define GAIN_I 1.0f                 //!< Integral gain for wheel drive
-#define GAIN_D 1.0f                 //!< Derivative gain for wheel drive
+#define GAIN_P (1.0f)               //!< Proportional gain for wheel drive
+#define GAIN_I (1.0f)               //!< Integral gain for wheel drive
+#define GAIN_D (1.0f)               //!< Derivative gain for wheel drive
 
-#define TARGET_ANGLE_MARGIN 5.0f    //!< Angle margin for wheel drive
+#define TARGET_ANGLE_MARGIN (5.0f)  //!< Angle margin for wheel drive
+
+#define ANGLE_RESOLUTION (8.0f)     //!< Angle resolution for servo motor; minimum angle difference will be inverse of this value
 
 /** Wheel motors descriptor */
 typedef struct {
@@ -30,16 +32,16 @@ typedef struct {
 typedef struct {
     uint8_t slice;
     uint8_t ch;
-    uint16_t cycles;
     uint16_t c_base;
     uint16_t wrap_val;
+    float cycles;
 } Servo;
 
 void initWheels(Wheels *w);
 void setTargetAngle(Wheels *w, float d);
 int runWheels(Wheels *w, uint16_t *angle_sensor_value);
 
-void initServo(Servo *s, float f_div, uint16_t t_min, uint16_t t_max);
-int setOnCycles(Servo *s, uint16_t c);
+void initServo(Servo *s, float freq, uint16_t t_min, uint16_t t_max);
+int setOnCycles(Servo *s, float c);
 
 #endif // __MOTOR_H__
