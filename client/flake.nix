@@ -19,6 +19,7 @@
         raylib
         gcc
         gnumake
+        gdb
         pkg-config
         doxygen
         neovim

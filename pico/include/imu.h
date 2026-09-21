@@ -108,33 +108,38 @@ typedef struct {
 /**
  * Setup IMU from provided device descriptor
  * @param imu a pointer to a device descriptor; inst, addr, and primary_mode fields should be filled beforehand
+ * @return an error code; 0 for success, 1 for NAK
  */
-void setupIMU(BNO055 *imu);
+int setupIMU(BNO055 *imu);
 /**
  * Save calibration data
  * @param imu a pointer to a device descriptor
  * @param dest a pointer to a 22 byte long array, which calibration data will be saved to
+ * @return an error code; 0 for success, 1 for NAK
  */
-void saveCalibration(BNO055 *imu, uint8_t *dest);
+int saveCalibration(BNO055 *imu, uint8_t *dest);
 /**
  * Load calibration data
  * @param imu a pointer to a device descriptor
  * @param src a pointer to a 22 byte long array to be loaded from as pre-calibrated data
+ * @return an error code; 0 for success, 1 for NAK
  */
-void loadCalibration(BNO055 *imu, uint8_t *src);
+int loadCalibration(BNO055 *imu, uint8_t *src);
 /**
  * Read IMU's orientation as euler angles
  * @param imu a pointer to a device descriptor
  * @param euler an array of three integers representing euler angle as raw bytes
+ * @return an error code; 0 for success, 1 for NAK
  */
-void readIMU(BNO055 *imu, uint16_t euler[3]);
+int readIMU(BNO055 *imu, uint16_t euler[3]);
 /**
  * Obtain IMU status information
  * @param imu a pointer to a device descriptor
  * @param calib a pointer to a byte sized variable storing calibration status
  * @param ssc a pointer to a byte sized variable storing system status code
  * @param ser a pointer to a byte sized variable storing system error code
+ * @return an error code; 0 for success, 1 for NAK
  */
-void obtainStatus(BNO055 *imu, uint8_t *calib, uint8_t *ssc, uint8_t *ser);
+int obtainStatus(BNO055 *imu, uint8_t *calib, uint8_t *ssc, uint8_t *ser);
 
 #endif // __IMU_H__

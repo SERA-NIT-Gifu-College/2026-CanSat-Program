@@ -3,7 +3,7 @@ CC:=gcc
 CXX:=g++
 RM:=rm
 CFLAGS:=-O2 -Wall -Wpedantic -std=c11
-CXXFLAGS:=-O2 -Wall -Wpedantic -std=c++20
+CXXFLAGS:=-O2 -Wall -Wpedantic -std=c++20 -g
 
 PREFIX:=./build
 

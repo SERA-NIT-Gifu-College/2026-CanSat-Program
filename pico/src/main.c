@@ -34,6 +34,9 @@ BNO055 imu = {
     .primary_mode = COMPASS
 };
 Servo pannel = {0};
+Servo parachute = {0};
+PIDController pid = {0};
+Wheels wheels = {0};
 
 int connectWifi(void) {
     if (cyw43_arch_init_with_country(CYW43_COUNTRY_JAPAN)) {
@@ -127,6 +130,52 @@ void callback(void *arg) {
             buff[0] = wpt_stat;
             memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
             break;
+        case MOVE:
+            MoveMode mode = srv->rx_buff[1];
+            enableChips((motor_stat = true), wpt_stat, imu_stat);
+            switch (mode) {
+                case STRAIGHT:
+                    {
+                    int8_t lev = (int8_t)(srv->rx_buff[2]);
+                    uint16_t t = ((uint16_t)(srv->rx_buff[3]) << 8) | (srv->rx_buff[4]);
+                    int res = driveWheelsForMs(&wheels, lev, lev, t, t);
+                    buff[0] = res;
+                    memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                    break;
+                    }
+                case INDEPENDENT:
+                    {
+                    int8_t lev1 = (int8_t)(srv->rx_buff[2]);
+                    uint16_t t1 = ((uint16_t)(srv->rx_buff[3]) << 8) | (srv->rx_buff[4]);
+                    int8_t lev2 = (int8_t)(srv->rx_buff[5]);
+                    uint16_t t2 = ((uint16_t)(srv->rx_buff[6]) << 8) | (srv->rx_buff[7]);
+                    int res = driveWheelsForMs(&wheels, lev1, lev2, t1, t2);
+                    buff[0] = res;
+                    memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                    break;
+                    }
+                case ABS_ANGLE:
+                    {
+                    uint16_t angle = ((uint16_t)(srv->rx_buff[2]) << 8) | (srv->rx_buff[3]);
+                    int res = setTargetAngle(&wheels, angle);
+                    buff[0] = res;
+                    memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                    break;
+                    }
+                case DELTA_ANGLE:
+                    {
+                    int16_t angle = (int16_t)(((uint16_t)(srv->rx_buff[2]) << 8) | (srv->rx_buff[3]));
+                    angle = wheels.pid->current + angle;
+                    if (angle < 0) {
+                        angle = 360 + angle;
+                    }
+                    int res = setTargetAngle(&wheels, angle);
+                    buff[0] = res;
+                    memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                    break;
+                    }
+            };
+            break;
         case PING:
             memcpy(&(srv->tx_buff[0]), "pong\r\n", 6);
             break;
@@ -140,7 +189,8 @@ int main(void) {
 
     gpio_init_mask((1 << MOTOR_EN_PIN) | (1 << WPT_EN_PIN) | (1 << IMU_RST_PIN));
     gpio_set_dir_out_masked((1 << MOTOR_EN_PIN) | (1 << WPT_EN_PIN) | (1 << IMU_RST_PIN));
-    enableChips(motor_stat, wpt_stat, imu_stat);
+    gpio_pull_up(IMU_RST_PIN);
+    enableChips(motor_stat, wpt_stat, (imu_stat = true));
 
     sleep_ms(3000);
 
@@ -181,10 +231,16 @@ int main(void) {
     gpio_set_function(6, GPIO_FUNC_I2C);
     gpio_set_function(7, GPIO_FUNC_I2C);
     watchdog_update();
-    imu_stat = true;
-    enableChips(motor_stat, wpt_stat, imu_stat);
-    sleep_ms(100);
-    setupIMU(&imu);
+    if (setupIMU(&imu)) {
+        printf("Failed to init IMU, restarting...\r\n");
+        watchdog_update();
+        while (1) {
+            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+            sleep_ms(100);
+            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+            sleep_ms(200);
+        }
+    }
 
     watchdog_update();
 
@@ -197,14 +253,21 @@ int main(void) {
     gpio_set_function(12, GPIO_FUNC_PWM);
     pannel.slice = pwm_gpio_to_slice_num(12);
     pannel.ch = PWM_CHAN_A;
-    motor_stat = true;
-    enableChips(motor_stat, wpt_stat, imu_stat);
     initServo(&pannel, 50, 500, 2500);
-    printf("current cycle: %f\r\nbase cycle: %d\r\nwrap value: %d\r\n",
-        pannel.cycles,
+    printf("current angle: %f\r\nbase cycle: %d\r\nwrap value: %d\r\n",
+        pannel.angle,
         pannel.c_base,
         pannel.wrap_val
     );
+
+    printf("Setting up Wheels...\r\n");
+    gpio_set_function(8, GPIO_FUNC_PWM);
+    gpio_set_function(9, GPIO_FUNC_PWM);
+    gpio_set_function(10, GPIO_FUNC_PWM);
+    gpio_set_function(11, GPIO_FUNC_PWM);
+    wheels.slice_m1 = pwm_gpio_to_slice_num(8);
+    wheels.slice_m2 = pwm_gpio_to_slice_num(10);
+    initWheels(&wheels, &pid);
 
     printf("Setting up Server...\r\n");
     err_t e = server_init(&server, callback);
@@ -223,13 +286,11 @@ int main(void) {
     printf("Complete!\r\n");
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    uint16_t ang[5] = {0, 90, 180, 270, 360};
-    uint8_t i = 0;
     while (1) {
-        setOnCycles(&pannel, ang[i]);
-        i++;
-        if (i == 5) i = 0;
-        sleep_ms(500);
+        sleep_ms(10);
+        if (!(wheels.running_1 || wheels.running_2)) {
+            enableChips((motor_stat = false), wpt_stat, imu_stat);
+        }
         watchdog_update();
     }
 
