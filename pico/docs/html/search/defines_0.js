@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['get_5ftelemetry_5fpacket_5ftx_5flen_0',['GET_TELEMETRY_PACKET_TX_LEN',['../server_8h.html#a00dca0ab8b1ac1c0ba3af2b515dd8005',1,'server.h']]]
+  ['angle_5fresolution_0',['ANGLE_RESOLUTION',['../motor_8h.html#a30ae22b58900beb0af52a7b34aa7d5ad',1,'motor.h']]]
 ];

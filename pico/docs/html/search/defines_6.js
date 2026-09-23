@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['tcp_5fport_0',['TCP_PORT',['../server_8h.html#a637b73f06ee87043251d022f87a8f3d4',1,'server.h']]],
-  ['tx_5fbuff_5fsz_1',['TX_BUFF_SZ',['../server_8h.html#adc755d60a37aa9ec6f622b4a1a40dc68',1,'server.h']]]
+  ['rx_5fbuff_5fsz_0',['RX_BUFF_SZ',['../server_8h.html#a0895d62bf7232a1651c9560347573ca2',1,'server.h']]]
 ];

@@ -119,87 +119,170 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('motor_8h.html'
   <div class="headertitle"><div class="title">motor.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;pico/types.h&gt;</code><br />
+
+<p>Helper functions for controlling onboard motors.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;stdbool.h&gt;</code><br />
+<code>#include &lt;hardware/timer.h&gt;</code><br />
 </div>
 <p><a href="motor_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:PIDController" id="r_PIDController"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structPIDController.html">PIDController</a></td></tr>
 <tr class="memitem:Wheels" id="r_Wheels"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structWheels.html">Wheels</a></td></tr>
+<tr class="memitem:Servo" id="r_Servo"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structServo.html">Servo</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a1cc71f9ee74302e4f6593401d43b89b4" id="r_a1cc71f9ee74302e4f6593401d43b89b4"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a1cc71f9ee74302e4f6593401d43b89b4">GAIN_P</a>&#160;&#160;&#160;1.0f</td></tr>
-<tr class="memitem:a57eefe97802249202387b96a619016d0" id="r_a57eefe97802249202387b96a619016d0"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a57eefe97802249202387b96a619016d0">GAIN_I</a>&#160;&#160;&#160;1.0f</td></tr>
-<tr class="memitem:a46fd26d4c55c5b918bafa92427a0254b" id="r_a46fd26d4c55c5b918bafa92427a0254b"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a46fd26d4c55c5b918bafa92427a0254b">GAIN_D</a>&#160;&#160;&#160;1.0f</td></tr>
-<tr class="memitem:a37d245b9f120bbe1d6f9a1b9fa812884" id="r_a37d245b9f120bbe1d6f9a1b9fa812884"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a37d245b9f120bbe1d6f9a1b9fa812884">TARGET_ANGLE_MARGIN</a>&#160;&#160;&#160;5.0f</td></tr>
+<tr class="memitem:a1cc71f9ee74302e4f6593401d43b89b4" id="r_a1cc71f9ee74302e4f6593401d43b89b4"><td class="memItemLeft"><a id="a1cc71f9ee74302e4f6593401d43b89b4" name="a1cc71f9ee74302e4f6593401d43b89b4"></a>
+#define&#160;</td><td class="memItemRight"><b>GAIN_P</b>&#160;&#160;&#160;(1.0f)</td></tr>
+<tr class="memdesc:a1cc71f9ee74302e4f6593401d43b89b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Proportional gain for wheel drive. <br /></td></tr>
+<tr class="memitem:a57eefe97802249202387b96a619016d0" id="r_a57eefe97802249202387b96a619016d0"><td class="memItemLeft"><a id="a57eefe97802249202387b96a619016d0" name="a57eefe97802249202387b96a619016d0"></a>
+#define&#160;</td><td class="memItemRight"><b>GAIN_I</b>&#160;&#160;&#160;(1.0f)</td></tr>
+<tr class="memdesc:a57eefe97802249202387b96a619016d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integral gain for wheel drive. <br /></td></tr>
+<tr class="memitem:a46fd26d4c55c5b918bafa92427a0254b" id="r_a46fd26d4c55c5b918bafa92427a0254b"><td class="memItemLeft"><a id="a46fd26d4c55c5b918bafa92427a0254b" name="a46fd26d4c55c5b918bafa92427a0254b"></a>
+#define&#160;</td><td class="memItemRight"><b>GAIN_D</b>&#160;&#160;&#160;(1.0f)</td></tr>
+<tr class="memdesc:a46fd26d4c55c5b918bafa92427a0254b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derivative gain for wheel drive. <br /></td></tr>
+<tr class="memitem:a37d245b9f120bbe1d6f9a1b9fa812884" id="r_a37d245b9f120bbe1d6f9a1b9fa812884"><td class="memItemLeft"><a id="a37d245b9f120bbe1d6f9a1b9fa812884" name="a37d245b9f120bbe1d6f9a1b9fa812884"></a>
+#define&#160;</td><td class="memItemRight"><b>TARGET_ANGLE_MARGIN</b>&#160;&#160;&#160;(2.0f)</td></tr>
+<tr class="memdesc:a37d245b9f120bbe1d6f9a1b9fa812884"><td class="mdescLeft">&#160;</td><td class="mdescRight">+/- Angle margin for wheel drive <br /></td></tr>
+<tr class="memitem:a30ae22b58900beb0af52a7b34aa7d5ad" id="r_a30ae22b58900beb0af52a7b34aa7d5ad"><td class="memItemLeft"><a id="a30ae22b58900beb0af52a7b34aa7d5ad" name="a30ae22b58900beb0af52a7b34aa7d5ad"></a>
+#define&#160;</td><td class="memItemRight"><b>ANGLE_RESOLUTION</b>&#160;&#160;&#160;(8.0f)</td></tr>
+<tr class="memdesc:a30ae22b58900beb0af52a7b34aa7d5ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Angle resolution for servo motor; minimum angle difference will be inverse of this value. <br /></td></tr>
+<tr class="memitem:a248b6653fb586c060f7c38903f530044" id="r_a248b6653fb586c060f7c38903f530044"><td class="memItemLeft"><a id="a248b6653fb586c060f7c38903f530044" name="a248b6653fb586c060f7c38903f530044"></a>
+#define&#160;</td><td class="memItemRight"><b>PID_TIME_KEEPING_TIMER_HW</b>&#160;&#160;&#160;timer1_hw</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a6d531471e64750012bb250f06718e819" id="r_a6d531471e64750012bb250f06718e819"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a6d531471e64750012bb250f06718e819">MoveMode</a> { <br />
+&#160;&#160;<b>STRAIGHT</b>
+, <b>INDEPENDENT</b>
+, <b>ABS_ANGLE</b>
+, <b>DELTA_ANGLE</b>
+, <br />
+&#160;&#160;<b>NUM_MOVE_MODE</b>
+<br />
+ }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a18b2e5ed0176d5b2a9aeb41bfc898e27" id="r_a18b2e5ed0176d5b2a9aeb41bfc898e27"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a18b2e5ed0176d5b2a9aeb41bfc898e27">initWheels</a> (<a class="el" href="structWheels.html">Wheels</a> *w)</td></tr>
-<tr class="memitem:a0e42eeb6e35b7a1416e2b51d698a551c" id="r_a0e42eeb6e35b7a1416e2b51d698a551c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0e42eeb6e35b7a1416e2b51d698a551c">setTargetAngle</a> (<a class="el" href="structWheels.html">Wheels</a> *w, float d)</td></tr>
-<tr class="memitem:a53fba04f216c657d96c604bad77dd5c3" id="r_a53fba04f216c657d96c604bad77dd5c3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a53fba04f216c657d96c604bad77dd5c3">runWheels</a> (<a class="el" href="structWheels.html">Wheels</a> *w, uint16_t *angle_sensor_value)</td></tr>
+<tr class="memitem:ac0b5085e241496e604a747f2441a78a1" id="r_ac0b5085e241496e604a747f2441a78a1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac0b5085e241496e604a747f2441a78a1">initWheels</a> (<a class="el" href="structWheels.html">Wheels</a> *w, <a class="el" href="structPIDController.html">PIDController</a> *pid)</td></tr>
+<tr class="memitem:a8f92635afcefb70b8ed95b28e3299b69" id="r_a8f92635afcefb70b8ed95b28e3299b69"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a8f92635afcefb70b8ed95b28e3299b69">setTargetAngle</a> (<a class="el" href="structWheels.html">Wheels</a> *w, uint16_t d)</td></tr>
+<tr class="memitem:ad369562c697f35401b26f182cdbbf91e" id="r_ad369562c697f35401b26f182cdbbf91e"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad369562c697f35401b26f182cdbbf91e">driveWheelsForMs</a> (<a class="el" href="structWheels.html">Wheels</a> *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2)</td></tr>
+<tr class="memitem:a32be64f9fdb01aa65329f24a8475becd" id="r_a32be64f9fdb01aa65329f24a8475becd"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a32be64f9fdb01aa65329f24a8475becd">wheelsPIDTick</a> (<a class="el" href="structWheels.html">Wheels</a> *w, uint16_t imu_heading)</td></tr>
+<tr class="memitem:a604678f8e24bed780bb641808a5014a6" id="r_a604678f8e24bed780bb641808a5014a6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a604678f8e24bed780bb641808a5014a6">initServo</a> (<a class="el" href="structServo.html">Servo</a> *s, float freq, uint16_t t_min, uint16_t t_max)</td></tr>
+<tr class="memitem:a8744f381267473c0018bf5608a340bac" id="r_a8744f381267473c0018bf5608a340bac"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a8744f381267473c0018bf5608a340bac">setServoAngle</a> (<a class="el" href="structServo.html">Servo</a> *s, float ang)</td></tr>
 </table>
-<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
-<a id="a46fd26d4c55c5b918bafa92427a0254b" name="a46fd26d4c55c5b918bafa92427a0254b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a46fd26d4c55c5b918bafa92427a0254b">&#9670;&#160;</a></span>GAIN_D</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Helper functions for controlling onboard motors. </p>
+</div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a6d531471e64750012bb250f06718e819" name="a6d531471e64750012bb250f06718e819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d531471e64750012bb250f06718e819">&#9670;&#160;</a></span>MoveMode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define GAIN_D&#160;&#160;&#160;1.0f</td>
+          <td class="memname">enum <a class="el" href="#a6d531471e64750012bb250f06718e819">MoveMode</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a57eefe97802249202387b96a619016d0" name="a57eefe97802249202387b96a619016d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a57eefe97802249202387b96a619016d0">&#9670;&#160;</a></span>GAIN_I</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define GAIN_I&#160;&#160;&#160;1.0f</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1cc71f9ee74302e4f6593401d43b89b4" name="a1cc71f9ee74302e4f6593401d43b89b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1cc71f9ee74302e4f6593401d43b89b4">&#9670;&#160;</a></span>GAIN_P</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define GAIN_P&#160;&#160;&#160;1.0f</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a37d245b9f120bbe1d6f9a1b9fa812884" name="a37d245b9f120bbe1d6f9a1b9fa812884"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d245b9f120bbe1d6f9a1b9fa812884">&#9670;&#160;</a></span>TARGET_ANGLE_MARGIN</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define TARGET_ANGLE_MARGIN&#160;&#160;&#160;5.0f</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Move modes </p>
 
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a18b2e5ed0176d5b2a9aeb41bfc898e27" name="a18b2e5ed0176d5b2a9aeb41bfc898e27"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18b2e5ed0176d5b2a9aeb41bfc898e27">&#9670;&#160;</a></span>initWheels()</h2>
+<a id="ad369562c697f35401b26f182cdbbf91e" name="ad369562c697f35401b26f182cdbbf91e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad369562c697f35401b26f182cdbbf91e">&#9670;&#160;</a></span>driveWheelsForMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int driveWheelsForMs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structWheels.html">Wheels</a> *</td>          <td class="paramname"><span class="paramname"><em>w</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t</td>          <td class="paramname"><span class="paramname"><em>lev1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t</td>          <td class="paramname"><span class="paramname"><em>lev2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>t1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>t2</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Spins wheels for certain period at certain speed </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">w</td><td>a pointer to wheels descriptor </td></tr>
+    <tr><td class="paramname">lev1</td><td>PWM level for first wheel. Set this value negative to spin backward. Range is -100 ~ 100. </td></tr>
+    <tr><td class="paramname">lev2</td><td>PWM level for second wheel. Set this value negative to spin backward. Range is -100 ~ 100. </td></tr>
+    <tr><td class="paramname">t1</td><td>Spin duration of first wheel in milliseconds </td></tr>
+    <tr><td class="paramname">t2</td><td>Spin duration of second wheel in milliseconds </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, 1 for rejected request </dd></dl>
+
+</div>
+</div>
+<a id="a604678f8e24bed780bb641808a5014a6" name="a604678f8e24bed780bb641808a5014a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a604678f8e24bed780bb641808a5014a6">&#9670;&#160;</a></span>initServo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void initServo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structServo.html">Servo</a> *</td>          <td class="paramname"><span class="paramname"><em>s</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>freq</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>t_min</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>t_max</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialize servo with specified frequency, min and max pulse width </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>a pointer to servo motor descriptor </td></tr>
+    <tr><td class="paramname">freq</td><td>frequency of PWM </td></tr>
+    <tr><td class="paramname">t_min</td><td>minimum pulse width </td></tr>
+    <tr><td class="paramname">t_max</td><td>maximum pulse width </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac0b5085e241496e604a747f2441a78a1" name="ac0b5085e241496e604a747f2441a78a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b5085e241496e604a747f2441a78a1">&#9670;&#160;</a></span>initWheels()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -207,53 +290,109 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void initWheels </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structWheels.html">Wheels</a> *</td>          <td class="paramname"><span class="paramname"><em>w</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="structWheels.html">Wheels</a> *</td>          <td class="paramname"><span class="paramname"><em>w</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="structPIDController.html">PIDController</a> *</td>          <td class="paramname"><span class="paramname"><em>pid</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Initialize wheels' PWM and descriptor </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">w</td><td>a pointer to wheels descriptor </td></tr>
+    <tr><td class="paramname">pid</td><td>a pointer to PID controller descriptor </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a53fba04f216c657d96c604bad77dd5c3" name="a53fba04f216c657d96c604bad77dd5c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53fba04f216c657d96c604bad77dd5c3">&#9670;&#160;</a></span>runWheels()</h2>
+<a id="a8744f381267473c0018bf5608a340bac" name="a8744f381267473c0018bf5608a340bac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8744f381267473c0018bf5608a340bac">&#9670;&#160;</a></span>setServoAngle()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void runWheels </td>
+          <td class="memname">int setServoAngle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structServo.html">Servo</a> *</td>          <td class="paramname"><span class="paramname"><em>s</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>ang</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets servo at specified "angle" </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>a pointer to servo motor descriptor </td></tr>
+    <tr><td class="paramname">ang</td><td>"angle" of servo; range will be 0 ~ 360 regardless a type of servo </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, 1 for incorrect ang parameter </dd></dl>
+
+</div>
+</div>
+<a id="a8f92635afcefb70b8ed95b28e3299b69" name="a8f92635afcefb70b8ed95b28e3299b69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f92635afcefb70b8ed95b28e3299b69">&#9670;&#160;</a></span>setTargetAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int setTargetAngle </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structWheels.html">Wheels</a> *</td>          <td class="paramname"><span class="paramname"><em>w</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint16_t *</td>          <td class="paramname"><span class="paramname"><em>angle_sensor_value</em></span>&#160;)</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>d</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Sets and start angle/heading control </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">w</td><td>a pointer to wheels descriptor </td></tr>
+    <tr><td class="paramname">d</td><td>target angle in degree </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, 1 for rejected request </dd></dl>
 
 </div>
 </div>
-<a id="a0e42eeb6e35b7a1416e2b51d698a551c" name="a0e42eeb6e35b7a1416e2b51d698a551c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0e42eeb6e35b7a1416e2b51d698a551c">&#9670;&#160;</a></span>setTargetAngle()</h2>
+<a id="a32be64f9fdb01aa65329f24a8475becd" name="a32be64f9fdb01aa65329f24a8475becd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32be64f9fdb01aa65329f24a8475becd">&#9670;&#160;</a></span>wheelsPIDTick()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void setTargetAngle </td>
+          <td class="memname">int wheelsPIDTick </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structWheels.html">Wheels</a> *</td>          <td class="paramname"><span class="paramname"><em>w</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>d</em></span>&#160;)</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>imu_heading</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>PID controller loop function for wheels; runs single "tick" of control </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">w</td><td>a pointer to wheels descriptor </td></tr>
+    <tr><td class="paramname">imu_heading</td><td>IMU reading of heading </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success tick, 1 for rejected tick </dd></dl>
 
 </div>
 </div>
@@ -270,7 +409,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="motor_8h.html">motor.h</a></li>
+    <li class="navelem"><b>include</b></li><li class="navelem"><a href="motor_8h.html">motor.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
   </ul>
 </div>

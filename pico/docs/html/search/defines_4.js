@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['save_5fcalib_5fpacket_5ftx_5flen_0',['SAVE_CALIB_PACKET_TX_LEN',['../server_8h.html#aab95864b17dd6f5676f552c763707e3e',1,'server.h']]],
-  ['search_5fsun_5fpacket_5ftx_5flen_1',['SEARCH_SUN_PACKET_TX_LEN',['../server_8h.html#a55ab8f8d67815798baa3f8609220fc50',1,'server.h']]],
-  ['solar_5fadc_5fnum_2',['SOLAR_ADC_NUM',['../solar_8h.html#a1342682fe88438288e4058289a659647',1,'solar.h']]]
+  ['motor_5fen_5fpin_0',['MOTOR_EN_PIN',['../chip__enable_8h.html#a560f98d5b9d063e1ee502e81ea43f501',1,'chip_enable.h']]],
+  ['move_5fpacket_5ftx_5flen_1',['MOVE_PACKET_TX_LEN',['../server_8h.html#aff5c1c1f6085d6c4a7367355deddc2be',1,'server.h']]]
 ];

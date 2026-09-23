@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['get_5ftelemetry_5fpacket_5ftx_5flen_0',['GET_TELEMETRY_PACKET_TX_LEN',['../server_8h.html#a00dca0ab8b1ac1c0ba3af2b515dd8005',1,'server.h']]],
-  ['getgen_1',['getGen',['../solar_8h.html#a2f5174b876207d037cc00eda23be8037',1,'solar.c']]]
+  ['data_5fpreparation_5fcallback_0',['Data_Preparation_Callback',['../server_8h.html#a9db83ac17339ebff5ab0c6d338218b07',1,'server.h']]],
+  ['drivewheelsforms_1',['driveWheelsForMs',['../motor_8h.html#ad369562c697f35401b26f182cdbbf91e',1,'motor.c']]]
 ];

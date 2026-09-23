@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['rx_5fbuff_5fsz_0',['RX_BUFF_SZ',['../server_8h.html#a0895d62bf7232a1651c9560347573ca2',1,'server.h']]]
+  ['light_5fsensor_5fadc_5fnum_0',['LIGHT_SENSOR_ADC_NUM',['../light__sensor_8h.html#a5fadec41407f886f726728f3f5469f88',1,'light_sensor.h']]],
+  ['light_5fsensor_5fsampling_5finterval_1',['LIGHT_SENSOR_SAMPLING_INTERVAL',['../light__sensor_8h.html#a86c5831f86cef63ac7d6717689ab2faf',1,'light_sensor.h']]],
+  ['light_5fsensor_5fsampling_5fnumber_2',['LIGHT_SENSOR_SAMPLING_NUMBER',['../light__sensor_8h.html#a93b2b0de770df631543b5e5a93883a43',1,'light_sensor.h']]],
+  ['load_5fcalib_5fpacket_5ftx_5flen_3',['LOAD_CALIB_PACKET_TX_LEN',['../server_8h.html#a923a2fb14767bd2075c6b9c46b01a525',1,'server.h']]]
 ];

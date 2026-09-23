@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['imu_2eh_0',['imu.h',['../imu_8h.html',1,'']]]
+  ['enablechips_0',['enableChips',['../chip__enable_8h.html#a75e8d5b5b0b3ccdc5162d219bc44ce38',1,'chip_enable.c']]]
 ];

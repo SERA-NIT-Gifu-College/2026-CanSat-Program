@@ -1,8 +1,7 @@
 var chip__enable_8h =
 [
-    [ "CHIP_ENABLE_INIT_MODE", "chip__enable_8h.html#acdee085c0ea8fa7f6ebf21583214202d", null ],
-    [ "CHIP_ENABLE_LIPO_MODE", "chip__enable_8h.html#aa0896a5ce5b5a8c2bf536df9d245e9a3", null ],
-    [ "CHIP_ENABLE_SOLAR_SELF_CHARGE_MODE", "chip__enable_8h.html#a1ec2f1d91304bd80fb4055badaae8c64", null ],
-    [ "CHIP_ENABLE_SOLAR_WPT_MODE", "chip__enable_8h.html#ae2e8db9f09139df42a190a3a88d28a65", null ],
-    [ "Chips", "chip__enable_8h.html#a82514fd20ce533a63a170eecdf55929a", null ]
+    [ "IMU_RST_PIN", "chip__enable_8h.html#abe68668588d252c4b1144c1166f4a969", null ],
+    [ "MOTOR_EN_PIN", "chip__enable_8h.html#a560f98d5b9d063e1ee502e81ea43f501", null ],
+    [ "WPT_EN_PIN", "chip__enable_8h.html#a9c0c5a3e48385ae2da71cda9a1a909e4", null ],
+    [ "enableChips", "chip__enable_8h.html#a75e8d5b5b0b3ccdc5162d219bc44ce38", null ]
 ];

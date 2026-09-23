@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['callback_0',['callback',['../main_8h.html#a5cf0ec74c281d1cf41aa803146efba62',1,'main.c']]],
-  ['chip_5fenable_2eh_1',['chip_enable.h',['../chip__enable_8h.html',1,'']]],
-  ['command_2',['Command',['../server_8h.html#a2afce0a47a93eee73a314d53e4890153',1,'server.h']]],
-  ['connectwifi_3',['connectWifi',['../main_8h.html#ac9633870772c1bce6a1860d235603d55',1,'main.c']]]
+  ['bno055_0',['BNO055',['../structBNO055.html',1,'']]],
+  ['bno055_5faxis_5fcfg_1',['BNO055_Axis_CFG',['../unionBNO055__Axis__CFG.html',1,'']]],
+  ['bno055_5faxis_5fpresets_2',['BNO055_Axis_Presets',['../imu_8h.html#a7cca4e015957b2070db663426c310554',1,'imu.h']]],
+  ['bno055_5foperation_5fmodes_3',['BNO055_Operation_Modes',['../imu_8h.html#a5c8bc3a20902ab97da718c35df464dc7',1,'imu.h']]],
+  ['bno055_5fregisters_4',['BNO055_Registers',['../imu_8h.html#a87331f932a31f54e0eb0d08afa699192',1,'imu.h']]]
 ];

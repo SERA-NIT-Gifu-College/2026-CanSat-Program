@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['readavg_0',['readAVG',['../light__sensor_8h.html#ab35faebae5b1517015907a31615552e6',1,'light_sensor.c']]],
-  ['readimu_1',['readIMU',['../imu_8h.html#a9a19231d4f4c80a92c3d3e73743277be',1,'imu.c']]],
-  ['rx_5fbuff_5fsz_2',['RX_BUFF_SZ',['../server_8h.html#a0895d62bf7232a1651c9560347573ca2',1,'server.h']]]
+  ['obtainstatus_0',['obtainStatus',['../imu_8h.html#a3a62d8477b1e2b4363c0666030aa3695',1,'imu.c']]]
 ];

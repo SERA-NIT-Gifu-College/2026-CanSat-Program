@@ -228,11 +228,11 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2e8811cce11ae292c8d7ead59575311e" id="r_a2e8811cce11ae292c8d7ead59575311e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2e8811cce11ae292c8d7ead59575311e">setupIMU</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu)</td></tr>
-<tr class="memitem:ac42b28fa07ac6f702a1fe918a048ae84" id="r_ac42b28fa07ac6f702a1fe918a048ae84"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac42b28fa07ac6f702a1fe918a048ae84">saveCalibration</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint8_t *dest)</td></tr>
-<tr class="memitem:afe22bcf5b125519748243933a29b0b3e" id="r_afe22bcf5b125519748243933a29b0b3e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afe22bcf5b125519748243933a29b0b3e">loadCalibration</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint8_t *src)</td></tr>
-<tr class="memitem:a9a19231d4f4c80a92c3d3e73743277be" id="r_a9a19231d4f4c80a92c3d3e73743277be"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9a19231d4f4c80a92c3d3e73743277be">readIMU</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint16_t euler[3])</td></tr>
-<tr class="memitem:a621a4744ff6c31eb9dfe791b6659793c" id="r_a621a4744ff6c31eb9dfe791b6659793c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a621a4744ff6c31eb9dfe791b6659793c">obtainStatus</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint8_t *calib, uint8_t *ssc, uint8_t *ser)</td></tr>
+<tr class="memitem:a450fb1891524f219eaafec9917e34632" id="r_a450fb1891524f219eaafec9917e34632"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a450fb1891524f219eaafec9917e34632">setupIMU</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu)</td></tr>
+<tr class="memitem:a2ed5c86b6a2080aa01fcb5ffac459285" id="r_a2ed5c86b6a2080aa01fcb5ffac459285"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a2ed5c86b6a2080aa01fcb5ffac459285">saveCalibration</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint8_t *dest)</td></tr>
+<tr class="memitem:ae471fe67492ad6f79bd66a6bc82ea821" id="r_ae471fe67492ad6f79bd66a6bc82ea821"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ae471fe67492ad6f79bd66a6bc82ea821">loadCalibration</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint8_t *src)</td></tr>
+<tr class="memitem:a6c0f7cf71b131cd84770bd486b8cd9cb" id="r_a6c0f7cf71b131cd84770bd486b8cd9cb"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a6c0f7cf71b131cd84770bd486b8cd9cb">readIMU</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint16_t euler[3])</td></tr>
+<tr class="memitem:a3a62d8477b1e2b4363c0666030aa3695" id="r_a3a62d8477b1e2b4363c0666030aa3695"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a3a62d8477b1e2b4363c0666030aa3695">obtainStatus</a> (<a class="el" href="structBNO055.html">BNO055</a> *imu, uint8_t *calib, uint8_t *ssc, uint8_t *ser)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>IMU controlling functions. </p>
@@ -283,14 +283,14 @@ Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="afe22bcf5b125519748243933a29b0b3e" name="afe22bcf5b125519748243933a29b0b3e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe22bcf5b125519748243933a29b0b3e">&#9670;&#160;</a></span>loadCalibration()</h2>
+<a id="ae471fe67492ad6f79bd66a6bc82ea821" name="ae471fe67492ad6f79bd66a6bc82ea821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae471fe67492ad6f79bd66a6bc82ea821">&#9670;&#160;</a></span>loadCalibration()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void loadCalibration </td>
+          <td class="memname">int loadCalibration </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBNO055.html">BNO055</a> *</td>          <td class="paramname"><span class="paramname"><em>imu</em></span>, </td>
         </tr>
@@ -308,17 +308,18 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>an error code; 0 for success, 1 for NAK </dd></dl>
 
 </div>
 </div>
-<a id="a621a4744ff6c31eb9dfe791b6659793c" name="a621a4744ff6c31eb9dfe791b6659793c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a621a4744ff6c31eb9dfe791b6659793c">&#9670;&#160;</a></span>obtainStatus()</h2>
+<a id="a3a62d8477b1e2b4363c0666030aa3695" name="a3a62d8477b1e2b4363c0666030aa3695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a62d8477b1e2b4363c0666030aa3695">&#9670;&#160;</a></span>obtainStatus()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void obtainStatus </td>
+          <td class="memname">int obtainStatus </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBNO055.html">BNO055</a> *</td>          <td class="paramname"><span class="paramname"><em>imu</em></span>, </td>
         </tr>
@@ -348,17 +349,18 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>an error code; 0 for success, 1 for NAK </dd></dl>
 
 </div>
 </div>
-<a id="a9a19231d4f4c80a92c3d3e73743277be" name="a9a19231d4f4c80a92c3d3e73743277be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a19231d4f4c80a92c3d3e73743277be">&#9670;&#160;</a></span>readIMU()</h2>
+<a id="a6c0f7cf71b131cd84770bd486b8cd9cb" name="a6c0f7cf71b131cd84770bd486b8cd9cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0f7cf71b131cd84770bd486b8cd9cb">&#9670;&#160;</a></span>readIMU()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void readIMU </td>
+          <td class="memname">int readIMU </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBNO055.html">BNO055</a> *</td>          <td class="paramname"><span class="paramname"><em>imu</em></span>, </td>
         </tr>
@@ -376,17 +378,18 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>an error code; 0 for success, 1 for NAK </dd></dl>
 
 </div>
 </div>
-<a id="ac42b28fa07ac6f702a1fe918a048ae84" name="ac42b28fa07ac6f702a1fe918a048ae84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac42b28fa07ac6f702a1fe918a048ae84">&#9670;&#160;</a></span>saveCalibration()</h2>
+<a id="a2ed5c86b6a2080aa01fcb5ffac459285" name="a2ed5c86b6a2080aa01fcb5ffac459285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ed5c86b6a2080aa01fcb5ffac459285">&#9670;&#160;</a></span>saveCalibration()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void saveCalibration </td>
+          <td class="memname">int saveCalibration </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBNO055.html">BNO055</a> *</td>          <td class="paramname"><span class="paramname"><em>imu</em></span>, </td>
         </tr>
@@ -404,17 +407,18 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>an error code; 0 for success, 1 for NAK </dd></dl>
 
 </div>
 </div>
-<a id="a2e8811cce11ae292c8d7ead59575311e" name="a2e8811cce11ae292c8d7ead59575311e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e8811cce11ae292c8d7ead59575311e">&#9670;&#160;</a></span>setupIMU()</h2>
+<a id="a450fb1891524f219eaafec9917e34632" name="a450fb1891524f219eaafec9917e34632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a450fb1891524f219eaafec9917e34632">&#9670;&#160;</a></span>setupIMU()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void setupIMU </td>
+          <td class="memname">int setupIMU </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBNO055.html">BNO055</a> *</td>          <td class="paramname"><span class="paramname"><em>imu</em></span></td><td>)</td>
           <td></td>
@@ -427,6 +431,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>an error code; 0 for success, 1 for NAK </dd></dl>
 
 </div>
 </div>

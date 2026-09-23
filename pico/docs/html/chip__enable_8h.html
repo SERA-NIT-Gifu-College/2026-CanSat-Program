@@ -129,20 +129,57 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('chip__enable_8
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a560f98d5b9d063e1ee502e81ea43f501" id="r_a560f98d5b9d063e1ee502e81ea43f501"><td class="memItemLeft"><a id="a560f98d5b9d063e1ee502e81ea43f501" name="a560f98d5b9d063e1ee502e81ea43f501"></a>
-#define&#160;</td><td class="memItemRight"><b>MOTOR_EN_PIN</b>&#160;&#160;&#160;2</td></tr>
+#define&#160;</td><td class="memItemRight"><b>MOTOR_EN_PIN</b>&#160;&#160;&#160;14</td></tr>
+<tr class="memdesc:a560f98d5b9d063e1ee502e81ea43f501"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin number for motor driver/V_m boost converter enable signal. <br /></td></tr>
 <tr class="memitem:a9c0c5a3e48385ae2da71cda9a1a909e4" id="r_a9c0c5a3e48385ae2da71cda9a1a909e4"><td class="memItemLeft"><a id="a9c0c5a3e48385ae2da71cda9a1a909e4" name="a9c0c5a3e48385ae2da71cda9a1a909e4"></a>
-#define&#160;</td><td class="memItemRight"><b>WPT_EN_PIN</b>&#160;&#160;&#160;3</td></tr>
+#define&#160;</td><td class="memItemRight"><b>WPT_EN_PIN</b>&#160;&#160;&#160;15</td></tr>
+<tr class="memdesc:a9c0c5a3e48385ae2da71cda9a1a909e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin number for high-side switch signal of wireless power transmitter module. <br /></td></tr>
 <tr class="memitem:abe68668588d252c4b1144c1166f4a969" id="r_abe68668588d252c4b1144c1166f4a969"><td class="memItemLeft"><a id="abe68668588d252c4b1144c1166f4a969" name="abe68668588d252c4b1144c1166f4a969"></a>
 #define&#160;</td><td class="memItemRight"><b>IMU_RST_PIN</b>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:abe68668588d252c4b1144c1166f4a969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin number for <a class="el" href="structBNO055.html">BNO055</a>'s nRESET signal. <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a75e8d5b5b0b3ccdc5162d219bc44ce38" id="r_a75e8d5b5b0b3ccdc5162d219bc44ce38"><td class="memItemLeft"><a id="a75e8d5b5b0b3ccdc5162d219bc44ce38" name="a75e8d5b5b0b3ccdc5162d219bc44ce38"></a>
-void&#160;</td><td class="memItemRight"><b>enableChips</b> (bool motor, bool wpt, bool imu)</td></tr>
+<tr class="memitem:a75e8d5b5b0b3ccdc5162d219bc44ce38" id="r_a75e8d5b5b0b3ccdc5162d219bc44ce38"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a75e8d5b5b0b3ccdc5162d219bc44ce38">enableChips</a> (bool motor, bool wpt, bool imu)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Control codes for chip enable signals. </p>
-</div></div><!-- contents -->
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a75e8d5b5b0b3ccdc5162d219bc44ce38" name="a75e8d5b5b0b3ccdc5162d219bc44ce38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75e8d5b5b0b3ccdc5162d219bc44ce38">&#9670;&#160;</a></span>enableChips()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void enableChips </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>motor</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>wpt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>imu</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets enable signals for each chips </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">motor</td><td>- enable status for motor driver/V_m boost converter </td></tr>
+    <tr><td class="paramname">wpt</td><td>- enable status for wireless power transmitter module </td></tr>
+    <tr><td class="paramname">imu</td><td>- enable status for IMU </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

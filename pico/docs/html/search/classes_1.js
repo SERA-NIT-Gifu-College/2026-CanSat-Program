@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['server_0',['Server',['../structServer.html',1,'']]]
+  ['pidcontroller_0',['PIDController',['../structPIDController.html',1,'']]]
 ];

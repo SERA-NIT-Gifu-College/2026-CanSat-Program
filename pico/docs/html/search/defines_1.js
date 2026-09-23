@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['light_5fsensor_5fadc_5fnum_0',['LIGHT_SENSOR_ADC_NUM',['../light__sensor_8h.html#a5fadec41407f886f726728f3f5469f88',1,'light_sensor.h']]],
-  ['light_5fsensor_5fsampling_5finterval_1',['LIGHT_SENSOR_SAMPLING_INTERVAL',['../light__sensor_8h.html#a86c5831f86cef63ac7d6717689ab2faf',1,'light_sensor.h']]],
-  ['light_5fsensor_5fsampling_5fnumber_2',['LIGHT_SENSOR_SAMPLING_NUMBER',['../light__sensor_8h.html#a93b2b0de770df631543b5e5a93883a43',1,'light_sensor.h']]],
-  ['load_5fcalib_5fpacket_5ftx_5flen_3',['LOAD_CALIB_PACKET_TX_LEN',['../server_8h.html#a923a2fb14767bd2075c6b9c46b01a525',1,'server.h']]]
+  ['gain_5fd_0',['GAIN_D',['../motor_8h.html#a46fd26d4c55c5b918bafa92427a0254b',1,'motor.h']]],
+  ['gain_5fi_1',['GAIN_I',['../motor_8h.html#a57eefe97802249202387b96a619016d0',1,'motor.h']]],
+  ['gain_5fp_2',['GAIN_P',['../motor_8h.html#a1cc71f9ee74302e4f6593401d43b89b4',1,'motor.h']]],
+  ['get_5ftelemetry_5fpacket_5ftx_5flen_3',['GET_TELEMETRY_PACKET_TX_LEN',['../server_8h.html#a00dca0ab8b1ac1c0ba3af2b515dd8005',1,'server.h']]]
 ];

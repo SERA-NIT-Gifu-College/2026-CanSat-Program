@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['command_0',['Command',['../server_8h.html#a2afce0a47a93eee73a314d53e4890153',1,'server.h']]]
+  ['movemode_0',['MoveMode',['../motor_8h.html#a6d531471e64750012bb250f06718e819',1,'motor.h']]]
 ];

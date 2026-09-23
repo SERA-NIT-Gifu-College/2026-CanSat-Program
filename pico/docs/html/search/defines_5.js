@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['tcp_5fport_0',['TCP_PORT',['../server_8h.html#a637b73f06ee87043251d022f87a8f3d4',1,'server.h']]],
-  ['tx_5fbuff_5fsz_1',['TX_BUFF_SZ',['../server_8h.html#adc755d60a37aa9ec6f622b4a1a40dc68',1,'server.h']]]
+  ['ping_5fpacket_5ftx_5flen_0',['PING_PACKET_TX_LEN',['../server_8h.html#a5d04c4d5b624d61083b2f38b1c19dedc',1,'server.h']]],
+  ['poll_5ftime_1',['POLL_TIME',['../server_8h.html#a589c789d252c794ac8a7356fea4269f2',1,'server.h']]]
 ];

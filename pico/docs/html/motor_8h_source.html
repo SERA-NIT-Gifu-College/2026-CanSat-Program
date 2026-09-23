@@ -119,45 +119,92 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('motor_8h_sourc
   <div class="headertitle"><div class="title">motor.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef __MOTOR_H__</span></div>
+<a href="motor_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef __MOTOR_H__</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define __MOTOR_H__</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;pico/types.h&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define GAIN_P 1.0f</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define GAIN_I 1.0f</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#define GAIN_D 1.0f</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#define TARGET_ANGLE_MARGIN 5.0f</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stdbool.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;hardware/timer.h&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structWheels.html">   14</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    uint slice_m1;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    uint chA_m1;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    uint chB_m1;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    uint slice_m2;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    uint chA_m2;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    uint chB_m2;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    uint16_t target;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    uint16_t current;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>} <a class="code hl_struct" href="structWheels.html">Wheels</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="motor_8h.html#a1cc71f9ee74302e4f6593401d43b89b4">   13</a></span><span class="preprocessor">#define GAIN_P (1.0f)               </span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="motor_8h.html#a57eefe97802249202387b96a619016d0">   14</a></span><span class="preprocessor">#define GAIN_I (1.0f)               </span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="motor_8h.html#a46fd26d4c55c5b918bafa92427a0254b">   15</a></span><span class="preprocessor">#define GAIN_D (1.0f)               </span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="motor_8h.html#a37d245b9f120bbe1d6f9a1b9fa812884">   17</a></span><span class="preprocessor">#define TARGET_ANGLE_MARGIN (2.0f)  </span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="motor_8h.html#a30ae22b58900beb0af52a7b34aa7d5ad">   19</a></span><span class="preprocessor">#define ANGLE_RESOLUTION (8.0f)     </span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define PID_TIME_KEEPING_TIMER_HW timer1_hw</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span></div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="motor_8h.html#a6d531471e64750012bb250f06718e819">   24</a></span><span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    STRAIGHT,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    INDEPENDENT,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    ABS_ANGLE,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    DELTA_ANGLE,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    NUM_MOVE_MODE</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>} <a class="code hl_enumeration" href="motor_8h.html#a6d531471e64750012bb250f06718e819">MoveMode</a>;</div>
 </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keywordtype">void</span> initWheels(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">void</span> setTargetAngle(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w, <span class="keywordtype">float</span> d);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">int</span> runWheels(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w, uint16_t *angle_sensor_value);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#endif </span><span class="comment">// __MOTOR_H__</span></div>
-<div class="ttc" id="astructWheels_html"><div class="ttname"><a href="structWheels.html">Wheels</a></div><div class="ttdef"><b>Definition</b> motor.h:14</div></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span></div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structPIDController.html">   33</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    uint16_t target;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    uint16_t current;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    uint64_t time_prev;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    uint64_t time_curr;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">double</span> prev_err;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">double</span> int_err;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">bool</span> onTarget;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>} <a class="code hl_struct" href="structPIDController.html">PIDController</a>;</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span></div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structWheels.html">   44</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    uint8_t slice_m1;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    uint8_t slice_m2;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">bool</span> running_1;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">bool</span> running_2;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_struct" href="structPIDController.html">PIDController</a> *pid;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>} <a class="code hl_struct" href="structWheels.html">Wheels</a>;</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structServo.html">   53</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    uint8_t slice;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    uint8_t ch;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    uint16_t c_base;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    uint16_t wrap_val;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">float</span> angle;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>} <a class="code hl_struct" href="structServo.html">Servo</a>;</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keywordtype">void</span> <a class="code hl_function" href="motor_8h.html#ac0b5085e241496e604a747f2441a78a1">initWheels</a>(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w, <a class="code hl_struct" href="structPIDController.html">PIDController</a> *pid);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keywordtype">int</span> <a class="code hl_function" href="motor_8h.html#a8f92635afcefb70b8ed95b28e3299b69">setTargetAngle</a>(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w, uint16_t d);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keywordtype">int</span> <a class="code hl_function" href="motor_8h.html#ad369562c697f35401b26f182cdbbf91e">driveWheelsForMs</a>(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keywordtype">int</span> <a class="code hl_function" href="motor_8h.html#a32be64f9fdb01aa65329f24a8475becd">wheelsPIDTick</a>(<a class="code hl_struct" href="structWheels.html">Wheels</a> *w, uint16_t imu_heading);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keywordtype">void</span> <a class="code hl_function" href="motor_8h.html#a604678f8e24bed780bb641808a5014a6">initServo</a>(<a class="code hl_struct" href="structServo.html">Servo</a> *s, <span class="keywordtype">float</span> freq, uint16_t t_min, uint16_t t_max);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keywordtype">int</span> <a class="code hl_function" href="motor_8h.html#a8744f381267473c0018bf5608a340bac">setServoAngle</a>(<a class="code hl_struct" href="structServo.html">Servo</a> *s, <span class="keywordtype">float</span> ang);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">#endif </span><span class="comment">// __MOTOR_H__</span></div>
+<div class="ttc" id="amotor_8h_html_a32be64f9fdb01aa65329f24a8475becd"><div class="ttname"><a href="motor_8h.html#a32be64f9fdb01aa65329f24a8475becd">wheelsPIDTick</a></div><div class="ttdeci">int wheelsPIDTick(Wheels *w, uint16_t imu_heading)</div><div class="ttdef"><b>Definition</b> motor.c:95</div></div>
+<div class="ttc" id="amotor_8h_html_a604678f8e24bed780bb641808a5014a6"><div class="ttname"><a href="motor_8h.html#a604678f8e24bed780bb641808a5014a6">initServo</a></div><div class="ttdeci">void initServo(Servo *s, float freq, uint16_t t_min, uint16_t t_max)</div><div class="ttdef"><b>Definition</b> motor.c:142</div></div>
+<div class="ttc" id="amotor_8h_html_a6d531471e64750012bb250f06718e819"><div class="ttname"><a href="motor_8h.html#a6d531471e64750012bb250f06718e819">MoveMode</a></div><div class="ttdeci">MoveMode</div><div class="ttdef"><b>Definition</b> motor.h:24</div></div>
+<div class="ttc" id="amotor_8h_html_a8744f381267473c0018bf5608a340bac"><div class="ttname"><a href="motor_8h.html#a8744f381267473c0018bf5608a340bac">setServoAngle</a></div><div class="ttdeci">int setServoAngle(Servo *s, float ang)</div><div class="ttdef"><b>Definition</b> motor.c:159</div></div>
+<div class="ttc" id="amotor_8h_html_a8f92635afcefb70b8ed95b28e3299b69"><div class="ttname"><a href="motor_8h.html#a8f92635afcefb70b8ed95b28e3299b69">setTargetAngle</a></div><div class="ttdeci">int setTargetAngle(Wheels *w, uint16_t d)</div><div class="ttdef"><b>Definition</b> motor.c:80</div></div>
+<div class="ttc" id="amotor_8h_html_ac0b5085e241496e604a747f2441a78a1"><div class="ttname"><a href="motor_8h.html#ac0b5085e241496e604a747f2441a78a1">initWheels</a></div><div class="ttdeci">void initWheels(Wheels *w, PIDController *pid)</div><div class="ttdef"><b>Definition</b> motor.c:41</div></div>
+<div class="ttc" id="amotor_8h_html_ad369562c697f35401b26f182cdbbf91e"><div class="ttname"><a href="motor_8h.html#ad369562c697f35401b26f182cdbbf91e">driveWheelsForMs</a></div><div class="ttdeci">int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2)</div><div class="ttdef"><b>Definition</b> motor.c:60</div></div>
+<div class="ttc" id="astructPIDController_html"><div class="ttname"><a href="structPIDController.html">PIDController</a></div><div class="ttdef"><b>Definition</b> motor.h:33</div></div>
+<div class="ttc" id="astructServo_html"><div class="ttname"><a href="structServo.html">Servo</a></div><div class="ttdef"><b>Definition</b> motor.h:53</div></div>
+<div class="ttc" id="astructWheels_html"><div class="ttname"><a href="structWheels.html">Wheels</a></div><div class="ttdef"><b>Definition</b> motor.h:44</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>include</b></li><li class="navelem"><b>motor.h</b></li>
+    <li class="navelem"><b>include</b></li><li class="navelem"><a href="motor_8h.html">motor.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
   </ul>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['main_0',['main',['../main_8h.html#a840291bc02cba5474a4cb46a9b9566fe',1,'main.c']]]
+  ['getgen_0',['getGen',['../solar_8h.html#a2f5174b876207d037cc00eda23be8037',1,'solar.c']]]
 ];
