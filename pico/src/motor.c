@@ -42,6 +42,7 @@ void initWheels(Wheels *w, PIDController *pid) {
     const float wrap_v = 10000.f;
 
     w->pid = pid;
+    w->pid->onTarget = true;
     w->running_1 = false;
     w->running_2 = false;
     pwm_config c = pwm_get_default_config();
@@ -77,12 +78,66 @@ int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t 
 }
 
 int setTargetAngle(Wheels *w, uint16_t angle) {
+    w->running_1 = true;
+    w->running_2 = true;
     w->pid->target = angle;
     w->pid->onTarget = false;
+    w->pid->time_prev = 0;
+    w->pid->time_curr = 0;
+    w->pid->prev_err = 0;
+    w->pid->int_err = 0;
+    // reset timer
+    PID_TIME_KEEPING_TIMER_HW->timelw = 0x0000;
+    PID_TIME_KEEPING_TIMER_HW->timehw = 0x0000;
     return 0;
 }
 
-int runWheels(Wheels *w, uint16_t imuHeading) {}
+int wheelsPIDTick(Wheels *w, uint16_t imuHeading) {
+    PIDController *pid = w->pid;
+
+    pid->time_curr = timer_time_us_64(PID_TIME_KEEPING_TIMER_HW);
+
+    pid->current = imuHeading;
+    double dt = (double)(pid->time_curr - pid->time_prev) / (1000.0 * 1000.0);
+    double e = pid->target - pid->current;
+
+    if ((e < 0.0 ? -e : e) > TARGET_ANGLE_MARGIN) {
+        pid->onTarget = true;
+        return 0;
+    }
+
+    double de = (e - pid->prev_err)/dt;
+    pid->int_err = pid->int_err + ((e + pid->prev_err) * (dt/2.0));
+
+    double u = (GAIN_P * e) + (GAIN_I * pid->int_err) + (GAIN_D * de);
+    // clamp value
+    if (u > 10000.0) {
+#ifdef DEBUG_MOTOR
+        printf("PID: Overshoot, u = %lf\r\n", u);
+#endif
+        u = 10000.0;
+    }
+    if (u < -10000.0) {
+#ifdef DEBUG_MOTOR
+        printf("PID: Undershoot, u = %lf\r\n", u);
+#endif
+        u = -10000.0;
+    }
+
+    pwm_set_both_levels(w->slice_m1,
+        u > 0.0 ? (uint16_t)u : 0,
+        u < 0.0 ? (uint16_t)(-u) : 0
+    );
+    pwm_set_both_levels(w->slice_m2,
+        u < 0.0 ? (uint16_t)(-u) : 0,
+        u > 0.0 ? (uint16_t)u : 0
+    );
+
+    pid->time_prev = pid->time_curr;
+    pid->prev_err = e;
+    
+    return 0;
+}
 
 void initServo(Servo *s, float freq, uint16_t t_min, uint16_t t_max) {
     float t = 1.f/freq;
@@ -102,7 +157,7 @@ void initServo(Servo *s, float freq, uint16_t t_min, uint16_t t_max) {
 }
 
 int setServoAngle(Servo *s, float ang) {
-    if (ang > 360) return 1;
+    if (ang > 360 || ang < 0) return 1;
     s->angle = ang;
     pwm_set_chan_level(s->slice, s->ch, (uint16_t)(s->c_base + ANGLE_RESOLUTION*s->angle));
     return 0;
