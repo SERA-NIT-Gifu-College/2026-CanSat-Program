@@ -37,6 +37,7 @@ Servo pannel = {0};
 Servo parachute = {0};
 PIDController pid = {0};
 Wheels wheels = {0};
+SunSearchSM sssm = {0};
 
 int connectWifi(void) {
     if (cyw43_arch_init_with_country(CYW43_COUNTRY_JAPAN)) {
@@ -69,6 +70,55 @@ int connectWifi(void) {
     }
 
     return 0;
+}
+
+void sunSearch() {
+    switch (sssm.state) {
+        case SUNSEARCH_IDLE:
+            break;
+        case SUNSEARCH_SCAN_HEADING:
+            if (wheels.pid->onTarget && sssm.brightness_read && !(sssm.transition)) {
+                sssm.brightness_read = false;
+                sssm.transition = true;
+                setTargetAngle(&wheels, sssm.heading);
+                sssm.heading += 45;
+                break;
+            } else if (wheels.pid->onTarget && !(sssm.brightness_read) && sssm.transition) {
+                uint16_t b = readAVG();
+                if (sssm.brightness < b) {
+                    sssm.brightness = b;
+                    sssm.max_brightness_heading = sssm.heading;
+                }
+                sssm.brightness_read = true;
+                sssm.transition = true;
+                if (sssm.heading == 315) {
+                    sssm.heading = 0;
+                    sssm.brightness = 0;
+                    sssm.state = SUNSEARCH_ROTATE_BRIGHTEST;
+                };
+                break;
+            } else {
+                break;
+            }
+        case SUNSEARCH_ROTATE_BRIGHTEST:
+            if (wheels.pid->onTarget && !(sssm.transition)) {
+                setTargetAngle(&wheels, sssm.max_brightness_heading);
+                sssm.transition = true;
+            } else if (wheels.pid->onTarget && sssm.transition) {
+                sssm.state = SUNSEARCH_SCAN_PITCH;
+                sssm.transition = false;
+                break;
+            } else {
+                break;
+            }
+        case SUNSEARCH_SCAN_PITCH:
+            sssm.state = SUNSEARCH_SET_PITCH;
+            break;
+        case SUNSEARCH_SET_PITCH:
+            setServoAngle(&pannel, sssm.pitch);
+            sssm.state = SUNSEARCH_IDLE;
+            break;
+    }
 }
 
 void serializeTelemetry(Telemetry *t, uint8_t *b) {
@@ -128,6 +178,21 @@ void callback(void *arg) {
             wpt_stat = !wpt_stat;
             enableChips(motor_stat, wpt_stat, imu_stat);
             buff[0] = wpt_stat;
+            memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+            break;
+        case SEARCH_SUN:
+            if (srv->rx_buff[1] == 0x01) {
+                buff[0] = sssm.state;
+                memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                break;
+            }
+            if (wheels.running_1 || wheels.running_2) {
+                buff[0] = 0x01;
+                memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                break;
+            }
+            sssm.state = SUNSEARCH_SCAN_HEADING;
+            buff[0] = 0x00;
             memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
             break;
         case MOVE:
@@ -254,11 +319,10 @@ int main(void) {
     pannel.slice = pwm_gpio_to_slice_num(12);
     pannel.ch = PWM_CHAN_A;
     initServo(&pannel, 50, 500, 2500);
-    printf("current angle: %f\r\nbase cycle: %d\r\nwrap value: %d\r\n",
-        pannel.angle,
-        pannel.c_base,
-        pannel.wrap_val
-    );
+    gpio_set_function(13, GPIO_FUNC_PWM);
+    parachute.slice = pwm_gpio_to_slice_num(13);
+    parachute.ch = PWM_CHAN_B;
+    initServo(&parachute, 100, 900, 2100);
 
     printf("Setting up Wheels...\r\n");
     gpio_set_function(8, GPIO_FUNC_PWM);
@@ -287,11 +351,15 @@ int main(void) {
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     while (1) {
-        sleep_ms(10);
-        if (!(wheels.running_1 || wheels.running_2)) {
-            enableChips((motor_stat = false), wpt_stat, imu_stat);
-        }
         watchdog_update();
+        sleep_ms(10);
+        if (!(wheels.pid->onTarget)) {
+            uint16_t euler[3] = {0};
+            (void)readIMU(&imu, euler);
+            wheelsPIDTick(&wheels, euler[0]);
+        }
+
+        sunSearch();        
     }
 
     return 0;

@@ -15,6 +15,11 @@
 int connectWifi(void);
 
 /**
+ * Sun Search Algorithm
+ */
+void sunSearch();
+
+/**
  * Serializes telemetry structure into byte stream
  * @param t A pointer to telemetry structure
  * @param b A pointer to byte-sized buffer to be written
