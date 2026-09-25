@@ -31,7 +31,7 @@ Telemetry telem = {0};
 BNO055 imu = {
     .inst = i2c1,
     .addr = 0x28,
-    .primary_mode = COMPASS
+    .primary_mode = NDOF_FMC_OFF
 };
 Servo pannel = {0};
 Servo parachute = {0};
@@ -76,47 +76,65 @@ void sunSearch() {
     switch (sssm.state) {
         case SUNSEARCH_IDLE:
             break;
-        case SUNSEARCH_SCAN_HEADING:
-            if (wheels.pid->onTarget && sssm.brightness_read && !(sssm.transition)) {
-                sssm.brightness_read = false;
+        case SUNSEARCH_ROTATE_HEADING:
+            if (wheels.pid->onTarget && !(sssm.transition)) {
                 sssm.transition = true;
                 setTargetAngle(&wheels, sssm.heading);
-                sssm.heading += 45;
-                break;
-            } else if (wheels.pid->onTarget && !(sssm.brightness_read) && sssm.transition) {
-                uint16_t b = readAVG();
-                if (sssm.brightness < b) {
-                    sssm.brightness = b;
-                    sssm.max_brightness_heading = sssm.heading;
-                }
-                sssm.brightness_read = true;
-                sssm.transition = true;
-                if (sssm.heading == 315) {
-                    sssm.heading = 0;
-                    sssm.brightness = 0;
-                    sssm.state = SUNSEARCH_ROTATE_BRIGHTEST;
-                };
-                break;
-            } else {
-                break;
+            } else if (wheels.pid->onTarget && sssm.transition) {
+                sssm.state = SUNSEARCH_SCAN_HEADING;
+                sssm.transition = false;
             }
+            break;
+        case SUNSEARCH_SCAN_HEADING:
+            uint16_t bh = readAVG();
+            if (sssm.brightness < bh) {
+                sssm.brightness = bh;
+                sssm.max_brightness_heading = sssm.heading;
+            }
+            sssm.heading += 0;
+            if (sssm.heading == 360) {
+                sssm.heading = 0;
+                sssm.brightness = 0;
+                sssm.state = SUNSEARCH_ROTATE_BRIGHTEST;
+            } else {
+                sssm.state = SUNSEARCH_ROTATE_HEADING;
+            }
+            break;
         case SUNSEARCH_ROTATE_BRIGHTEST:
             if (wheels.pid->onTarget && !(sssm.transition)) {
-                setTargetAngle(&wheels, sssm.max_brightness_heading);
                 sssm.transition = true;
+                setTargetAngle(&wheels, sssm.max_brightness_heading);
             } else if (wheels.pid->onTarget && sssm.transition) {
-                sssm.state = SUNSEARCH_SCAN_PITCH;
+                sssm.state = SUNSEARCH_PITCH_UP;
                 sssm.transition = false;
                 break;
-            } else {
-                break;
-            }
+            } 
+            break;
+        case SUNSEARCH_PITCH_UP:
+            setServoAngle(&pannel, sssm.pitch);
+            sleep_ms(200);
+            sssm.state = SUNSEARCH_SCAN_PITCH;
+            break;
         case SUNSEARCH_SCAN_PITCH:
-            sssm.state = SUNSEARCH_SET_PITCH;
+            uint16_t bp = readAVG();
+            if (sssm.brightness < bp) {
+                sssm.brightness = bp;
+                sssm.max_brightness_pitch = sssm.pitch;
+            }
+            sssm.pitch += 0;
+            if (sssm.pitch == 360) {
+                sssm.pitch = 0;
+                sssm.brightness = 0;
+                sssm.state = SUNSEARCH_SET_PITCH;
+            } else {
+                sssm.state = SUNSEARCH_SET_PITCH;
+            }
             break;
         case SUNSEARCH_SET_PITCH:
             setServoAngle(&pannel, sssm.pitch);
             sssm.state = SUNSEARCH_IDLE;
+            break;
+        default:
             break;
     }
 }
@@ -174,10 +192,24 @@ void callback(void *arg) {
             serializeTelemetry(&telem, buff);
             memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
             break;
+        case LOAD_CALIB:
+            loadCalibration(&imu);
+            break;
+        case SAVE_CALIB:
+            saveCalibration(&imu);
+            break;
         case TOGGLE_WPT:
             wpt_stat = !wpt_stat;
             enableChips(motor_stat, wpt_stat, imu_stat);
             buff[0] = wpt_stat;
+            memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+            break;
+        case TOGGLE_PARACHUTE:
+            enableChips((motor_stat = true), wpt_stat, imu_stat);
+            setServoAngle(&parachute, parachute.angle == 0.f ? 360.f : 0.f);
+            sleep_ms(400);
+            enableChips((motor_stat = false), wpt_stat, imu_stat);
+            buff[0] = parachute.angle == 0.f ? 0x00 : 0x01;
             memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
             break;
         case SEARCH_SUN:
@@ -186,7 +218,7 @@ void callback(void *arg) {
                 memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                 break;
             }
-            if (wheels.running_1 || wheels.running_2) {
+            if (sssm.state != SUNSEARCH_IDLE) {
                 buff[0] = 0x01;
                 memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                 break;
@@ -315,6 +347,7 @@ int main(void) {
     setupSolarMon();
 
     printf("Setting up Servo...\r\n");
+    enableChips((motor_stat = true), wpt_stat, imu_stat);
     gpio_set_function(12, GPIO_FUNC_PWM);
     pannel.slice = pwm_gpio_to_slice_num(12);
     pannel.ch = PWM_CHAN_A;
@@ -332,6 +365,7 @@ int main(void) {
     wheels.slice_m1 = pwm_gpio_to_slice_num(8);
     wheels.slice_m2 = pwm_gpio_to_slice_num(10);
     initWheels(&wheels, &pid);
+    enableChips((motor_stat = false), wpt_stat, imu_stat);
 
     printf("Setting up Server...\r\n");
     err_t e = server_init(&server, callback);
@@ -357,6 +391,9 @@ int main(void) {
             uint16_t euler[3] = {0};
             (void)readIMU(&imu, euler);
             wheelsPIDTick(&wheels, euler[0]);
+        }
+        if (!(wheels.running_1 || wheels.running_2)) {
+            enableChips((motor_stat = false), wpt_stat, imu_stat);
         }
 
         sunSearch();        

@@ -30,6 +30,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
     hardware_adc
     hardware_dma
+    hardware_flash
     hardware_gpio
     hardware_i2c
     hardware_irq
@@ -39,6 +40,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     hardware_watchdog
     pico_cyw43_arch_lwip_threadsafe_background
     pico_stdlib
+    pico_flash
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     WIFI_SSID=\"$ENV{WIFI_SSID}\"

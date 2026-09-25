@@ -112,19 +112,17 @@ typedef struct {
  */
 int setupIMU(BNO055 *imu);
 /**
- * Save calibration data
+ * Save calibration data into flash
  * @param imu a pointer to a device descriptor
- * @param dest a pointer to a 22 byte long array, which calibration data will be saved to
  * @return an error code; 0 for success, 1 for NAK
  */
-int saveCalibration(BNO055 *imu, uint8_t *dest);
+int saveCalibration(BNO055 *imu);
 /**
- * Load calibration data
+ * Load calibration data from flash
  * @param imu a pointer to a device descriptor
- * @param src a pointer to a 22 byte long array to be loaded from as pre-calibrated data
  * @return an error code; 0 for success, 1 for NAK
  */
-int loadCalibration(BNO055 *imu, uint8_t *src);
+int loadCalibration(BNO055 *imu);
 /**
  * Read IMU's orientation as euler angles
  * @param imu a pointer to a device descriptor
