@@ -17,6 +17,7 @@ class TCP_Client {
             SEARCH_SUN,
             MOVE,
             TOGGLE_WPT,
+            TOGGLE_PARACHUTE,
             PING,
             NUM_COMMANDS
         } Command;

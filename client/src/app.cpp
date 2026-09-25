@@ -64,7 +64,7 @@ auto get_telemetry(int interval, TCP_Client &c) -> int {
     std::cout << "Euler: (" << euler_heading << ", " << euler_roll << ", " << euler_pitch << ")" << std::endl;
 
     std::cout << "Light Sensor: " << light_sensor_voltage << " [V]" << std::endl;
-    std::cout << "Solar Cell: " << solar_cell_voltage << " [V]" << std::endl;
+    std::cout << "Solar Cell: " << solar_cell_voltage * 2.0 << " [V]" << std::endl;
 
     std::printf("IMU Status: 0x%02X\n", data[10]);
     std::printf("IMU Error: 0x%02X\n", data[11]);
@@ -136,6 +136,10 @@ auto main(int argc, char **argv) -> int {
         ("a,angle", "Target angle for abs_angle or angle difference for delta_angle", cxxopts::value<int>())
         ("t,timeout", "Ping interval, telemetry poll interval or move command duration in milliseconds; use list of two intervals for independent move command", cxxopts::value<std::vector<int>>()->default_value("1000,0"))
         ("w,wireless-power-transmit", "Toggles wireless power transmittion")
+        ("search-sun", "Executes sun search program, status can be view from \"--search-sun-status\"")
+        ("search-sun-status", "Retrieve status information of sun search program")
+        ("parachute", "Toggles parachute servo position")
+        ("calib", "Save or load IMU calibration into/from flash", cxxopts::value<std::string>())
         ("h,help", "Print usage")
         ("ip", "IP address of rover's server", cxxopts::value<std::string>())
         ("port", "Port number of rover's server", cxxopts::value<int>())
@@ -189,6 +193,26 @@ auto main(int argc, char **argv) -> int {
             std::cerr << "Failed to send PING" << std::endl;
             return 1;
         }
+    } else if (result.count("calib")) {
+        std::array<uint8_t, 7> opt = {0};
+        auto op = result["calib"].as<std::string>();
+        if (op == "save") {
+            auto res = client.sendCommand(TCP_Client::SAVE_CALIB, opt);
+            if (!(res.has_value())) {
+                std::cerr << "Failed to save calibration" << std::endl;
+                return 1;
+            }
+        } else if (op == "load") {
+            auto res = client.sendCommand(TCP_Client::LOAD_CALIB, opt);
+            if (!(res.has_value())) {
+                std::cerr << "Failed to load calibration" << std::endl;
+                return 1;
+            }
+        } else {
+            std::cerr << "Invalid operation, should be either \"save\" or \"load\"" << std::endl;
+            return 1;
+        }
+        std::cout << "Calibration operation complete" << std::endl;
     } else if (result["wireless-power-transmit"].as<bool>()) {
         std::array<uint8_t, 7> opt = {0};
         auto res = client.sendCommand(TCP_Client::TOGGLE_WPT, opt);
@@ -198,6 +222,34 @@ auto main(int argc, char **argv) -> int {
         }
         auto data = res.value();
         std::cout << (data[0] == 0x01 ? "WPT ON" : "WPT OFF") << std::endl;
+    } else if (result["parachute"].as<bool>()) {
+        std::array<uint8_t, 7> opt = {0};
+        auto res = client.sendCommand(TCP_Client::TOGGLE_PARACHUTE, opt);
+        if (!(res.has_value())) {
+            std::cerr << "Failed to toggle parachute servo position" << std::endl;
+            return 1;
+        }
+        auto data = res.value();
+        std::cout << (data[0] == 0x01 ? "Parachute Released" : "Parachute Attached") << std::endl;
+    } else if (result["search-sun"].as<bool>()) {
+        std::array<uint8_t, 7> opt = {0};
+        auto res = client.sendCommand(TCP_Client::SEARCH_SUN, opt);
+        if (!(res.has_value())) {
+            std::cerr << "Failed to start execution of program" << std::endl;
+            return 1;
+        }
+        auto data = res.value();
+        std::cout << (data[0] == 0x01 ? "Program is already running" : "Program started") << std::endl;
+    } else if (result["search-sun-status"].as<bool>()) {
+        std::array<uint8_t, 7> opt = {0};
+        opt[0] = 0x01;
+        auto res = client.sendCommand(TCP_Client::SEARCH_SUN, opt);
+        if (!(res.has_value())) {
+            std::cerr << "Failed to retrieve program status" << std::endl;
+            return 1;
+        }
+        auto data = res.value();
+        std::cout << (int)data[0] << std::endl;
     } else if (result.count("move")) {
         const std::map<std::string, MoveMode> modes{
             {"straight", MoveMode::STRAIGHT},
