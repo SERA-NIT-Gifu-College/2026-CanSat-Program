@@ -78,6 +78,7 @@ int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t 
 }
 
 int setTargetAngle(Wheels *w, uint16_t angle) {
+    if (w->running_1 || w->running_2) return 1;
     w->running_1 = true;
     w->running_2 = true;
     w->pid->target = angle;
@@ -110,6 +111,11 @@ int wheelsPIDTick(Wheels *w, uint16_t imuHeading) {
     pid->int_err = pid->int_err + ((e + pid->prev_err) * (dt/2.0));
 
     double u = (GAIN_P * e) + (GAIN_I * pid->int_err) + (GAIN_D * de);
+
+#ifdef DEBUG_MOTOR
+    printf("u = %lf\r\n", u);
+#endif
+
     // clamp value
     if (u > 10000.0) {
 #ifdef DEBUG_MOTOR

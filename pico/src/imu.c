@@ -8,16 +8,22 @@
 #include <string.h>
 #include <stdio.h>
 
-#define DEBUG_IMU
+#define DEBUG_IMU 1
 
 #define WRITE_REG(reg, data) \
     { \
+        if (DEBUG_IMU) { \
+            printf("IMU W: 0x%02X, 0x%02X\r\n", (reg), (data)); \
+        } \
         uint8_t buff[2] = {(reg), (data)}; \
         int ret = i2c_write_blocking(imu->inst, imu->addr, buff, 2, false); \
         if (ret == PICO_ERROR_GENERIC) return 1; \
     } 
 #define READ_REG(reg, dest) \
     { \
+        if (DEBUG_IMU) { \
+            printf("IMU R: 0x%02X\r\n", (reg)); \
+        } \
         uint8_t buff = (reg); \
         int ret = i2c_write_blocking(imu->inst, imu->addr, &buff, 1, true); \
         if (ret == PICO_ERROR_GENERIC) return 1; \
@@ -39,6 +45,49 @@ static void flash_erase_cb(void *param) {
     flash_range_erase(ofst, FLASH_SECTOR_SIZE);
 }
 
+int setupIMULaunchPhase(BNO055 *imu, int mode) {
+    BNO055_Axis_CFG axis;
+    axis.cfg = P1;
+    WRITE_REG(PAGE_ID, 0x00)
+    sleep_ms(100);
+    WRITE_REG(OPR_MODE, CONFIG_MODE)
+    sleep_ms(100);
+    WRITE_REG(UNIT_SEL, 0x80)
+    WRITE_REG(AXIS_MAP_CONFIG, axis.config[0])
+    WRITE_REG(AXIS_MAP_SIGN, axis.config[1])
+    WRITE_REG(PAGE_ID, 0x01)
+    // Normal, 125 Hz, 16G
+    WRITE_REG(ACC_CONFIG, 0x13)
+    sleep_ms(100);
+    if (mode == 0) {
+        // ACC_HIGH_G
+        WRITE_REG(INT_MSK, 0x20)
+        WRITE_REG(INT_EN, 0x20)
+        // 10 ms
+        WRITE_REG(ACC_HG_DURATION, 0x04)
+        // Default, > 12G
+        WRITE_REG(ACC_HG_THRES, 0xC0)
+        // Enable all axis for HG, Disable rest
+        WRITE_REG(ACC_INT_SETTINGS, 0xE0)
+    } else if (mode == 1) {
+        // ACC_NM
+        WRITE_REG(INT_MSK, 0x80)
+        WRITE_REG(INT_EN, 0x80)
+        // Enable all axis for NM, Disable rest
+        WRITE_REG(ACC_INT_SETTINGS, 0x1C)
+        // < 0.03125 G
+        WRITE_REG(ACC_NM_THRES, 0x01)
+        // NM mode, 16 seconds timeout
+        WRITE_REG(ACC_NM_SET, (0x0F << 1) | 0x05)
+    }
+    WRITE_REG(PAGE_ID, 0x00)
+    sleep_ms(100);
+    WRITE_REG(OPR_MODE, ACCONLY)
+    sleep_ms(100);
+
+    return 0;
+}
+
 int setupIMU(BNO055 *imu) {
     BNO055_Axis_CFG axis;
     axis.cfg = P1;
@@ -50,6 +99,15 @@ int setupIMU(BNO055 *imu) {
     WRITE_REG(AXIS_MAP_CONFIG, axis.config[0])
     WRITE_REG(AXIS_MAP_SIGN, axis.config[1])
     WRITE_REG(OPR_MODE, imu->primary_mode)
+    sleep_ms(100);
+
+    return 0;
+}
+
+int clearINT(BNO055 *imu) {
+    WRITE_REG(PAGE_ID, 0x00)
+    sleep_ms(100);
+    WRITE_REG(SYS_TRIGGER, 0x40)
     sleep_ms(100);
 
     return 0;

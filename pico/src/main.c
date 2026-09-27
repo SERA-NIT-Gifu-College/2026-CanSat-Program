@@ -26,12 +26,15 @@
 bool motor_stat = false;
 bool wpt_stat = false;
 bool imu_stat = false;
+bool hg_detected = false;
+bool nm_detected = false;
+bool lp2_configured = false;
 Server server = {0};
 Telemetry telem = {0};
 BNO055 imu = {
     .inst = i2c1,
     .addr = 0x28,
-    .primary_mode = NDOF_FMC_OFF
+    .primary_mode = NDOF
 };
 Servo pannel = {0};
 Servo parachute = {0};
@@ -56,7 +59,7 @@ int connectWifi(void) {
         return 2;
     }
 
-    res = cyw43_wifi_pm(&cyw43_state, CYW43_AGGRESSIVE_PM);
+    res = cyw43_wifi_pm(&cyw43_state, CYW43_PERFORMANCE_PM);
     if (res != 0) {
         watchdog_enable(3 * 1000, true);
         return 3;
@@ -86,12 +89,13 @@ void sunSearch() {
             }
             break;
         case SUNSEARCH_SCAN_HEADING:
+            {
             uint16_t bh = readAVG();
             if (sssm.brightness < bh) {
                 sssm.brightness = bh;
                 sssm.max_brightness_heading = sssm.heading;
             }
-            sssm.heading += 0;
+            sssm.heading += 45;
             if (sssm.heading == 360) {
                 sssm.heading = 0;
                 sssm.brightness = 0;
@@ -100,6 +104,7 @@ void sunSearch() {
                 sssm.state = SUNSEARCH_ROTATE_HEADING;
             }
             break;
+            }
         case SUNSEARCH_ROTATE_BRIGHTEST:
             if (wheels.pid->onTarget && !(sssm.transition)) {
                 sssm.transition = true;
@@ -116,12 +121,13 @@ void sunSearch() {
             sssm.state = SUNSEARCH_SCAN_PITCH;
             break;
         case SUNSEARCH_SCAN_PITCH:
+            {
             uint16_t bp = readAVG();
             if (sssm.brightness < bp) {
                 sssm.brightness = bp;
                 sssm.max_brightness_pitch = sssm.pitch;
             }
-            sssm.pitch += 0;
+            sssm.pitch += 90;
             if (sssm.pitch == 360) {
                 sssm.pitch = 0;
                 sssm.brightness = 0;
@@ -130,6 +136,7 @@ void sunSearch() {
                 sssm.state = SUNSEARCH_SET_PITCH;
             }
             break;
+            }
         case SUNSEARCH_SET_PITCH:
             setServoAngle(&pannel, sssm.pitch);
             sssm.state = SUNSEARCH_IDLE;
@@ -228,6 +235,7 @@ void callback(void *arg) {
             memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
             break;
         case MOVE:
+            {
             MoveMode mode = srv->rx_buff[1];
             enableChips((motor_stat = true), wpt_stat, imu_stat);
             switch (mode) {
@@ -271,13 +279,29 @@ void callback(void *arg) {
                     memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                     break;
                     }
+                default:
+                    break;
             };
             break;
+            }
         case PING:
             memcpy(&(srv->tx_buff[0]), "pong\r\n", 6);
             break;
         default:
             break;
+    }
+}
+
+void imu_int_irq(uint _gpio, uint32_t _event_mask) {
+    if (!hg_detected && !nm_detected) {
+        hg_detected = true;
+        printf("High G Detected!\r\n");
+        return;
+    }
+    if (!nm_detected && hg_detected) {
+        nm_detected = true;
+        printf("No motion detected!\r\n");
+        return;
     }
 }
 
@@ -287,15 +311,46 @@ int main(void) {
     gpio_init_mask((1 << MOTOR_EN_PIN) | (1 << WPT_EN_PIN) | (1 << IMU_RST_PIN));
     gpio_set_dir_out_masked((1 << MOTOR_EN_PIN) | (1 << WPT_EN_PIN) | (1 << IMU_RST_PIN));
     gpio_pull_up(IMU_RST_PIN);
+    enableChips(false, false, false);
+    sleep_ms(500);
     enableChips(motor_stat, wpt_stat, (imu_stat = true));
 
-    sleep_ms(3000);
+    i2c_init(i2c1, 400 * 1000);
+    gpio_set_function(6, GPIO_FUNC_I2C);
+    gpio_set_function(7, GPIO_FUNC_I2C);
+    sleep_ms(500);
 
     if (watchdog_caused_reboot()) {
-        printf("Reseted by watchdog\r\n");
+        printf("Reseted by watchdog, continuing to post launch program.\r\n");
+    } else {
+        printf("Starting pre launch/launch program\r\n");
+        gpio_init(IMU_INT_PIN);
+        gpio_set_dir(IMU_INT_PIN, false);
+        gpio_set_irq_enabled_with_callback(IMU_INT_PIN, GPIO_IRQ_EDGE_RISE, true, imu_int_irq);
+        if (setupIMULaunchPhase(&imu, 0)) {
+            printf("Failed to setup IMU for high G detection. Please manually restart the device.\r\n");
+            while (1) ;
+        }
+        while (1) {
+            if (hg_detected && !lp2_configured) {
+                clearINT(&imu);
+                if (setupIMULaunchPhase(&imu, 1)) {
+                    printf("Failed to setup IMU for no motion detection. Please manually restart the device.\r\n");
+                    while (1) ;
+                }
+                lp2_configured = true;
+            }
+            if (hg_detected && nm_detected) {
+                printf("Detected Landing, rebooting into post launch program...\r\n");
+                watchdog_enable(5000, true);
+                while (1) ;
+            }
+            sleep_ms(10);
+        }
     }
 
-    printf("Connecting to WiFi...\r\n");
+    // POST LAUNCH PROGRAM BELOW //
+
     int conn_stat = connectWifi();
     if (conn_stat) {
         switch (conn_stat) {
@@ -323,10 +378,6 @@ int main(void) {
 
     watchdog_enable(1000, true);
 
-    printf("Setting up I2C IMU...\r\n");
-    i2c_init(i2c1, 400 * 1000);
-    gpio_set_function(6, GPIO_FUNC_I2C);
-    gpio_set_function(7, GPIO_FUNC_I2C);
     watchdog_update();
     if (setupIMU(&imu)) {
         printf("Failed to init IMU, restarting...\r\n");
@@ -341,12 +392,10 @@ int main(void) {
 
     watchdog_update();
 
-    printf("Setting up Analog Sensors...\r\n");
     adc_init();
     setupLightSensor();
     setupSolarMon();
 
-    printf("Setting up Servo...\r\n");
     enableChips((motor_stat = true), wpt_stat, imu_stat);
     gpio_set_function(12, GPIO_FUNC_PWM);
     pannel.slice = pwm_gpio_to_slice_num(12);
@@ -357,7 +406,6 @@ int main(void) {
     parachute.ch = PWM_CHAN_B;
     initServo(&parachute, 100, 900, 2100);
 
-    printf("Setting up Wheels...\r\n");
     gpio_set_function(8, GPIO_FUNC_PWM);
     gpio_set_function(9, GPIO_FUNC_PWM);
     gpio_set_function(10, GPIO_FUNC_PWM);
@@ -367,7 +415,6 @@ int main(void) {
     initWheels(&wheels, &pid);
     enableChips((motor_stat = false), wpt_stat, imu_stat);
 
-    printf("Setting up Server...\r\n");
     err_t e = server_init(&server, callback);
 
     if (e != ERR_OK) {
@@ -387,6 +434,23 @@ int main(void) {
     while (1) {
         watchdog_update();
         sleep_ms(10);
+        int s = cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA);
+        switch (s) {
+            case CYW43_LINK_FAIL:
+                printf("Connection failed\r\n");
+                break;
+            case CYW43_LINK_NOIP:
+                printf("No IP assigned\r\n");
+                break;
+            case CYW43_LINK_DOWN:
+                printf("Connection is down\r\n");
+                break;
+            case CYW43_LINK_NONET:
+                printf("No matching SSID\r\n");
+                break;
+            default:
+                break;
+        }
         if (!(wheels.pid->onTarget)) {
             uint16_t euler[3] = {0};
             (void)readIMU(&imu, euler);

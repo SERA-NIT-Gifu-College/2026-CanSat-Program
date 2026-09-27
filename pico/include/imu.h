@@ -8,6 +8,8 @@
 
 #include <hardware/i2c.h>
 
+#define IMU_INT_PIN 5 //!< GPIO number to IMU interrupt signal pin
+
 /** Union for spliting values for AXIS_MAP_CONFIG and AXIS_MAP_SIGN */
 typedef union {
     uint16_t cfg;
@@ -111,6 +113,19 @@ typedef struct {
  * @return an error code; 0 for success, 1 for NAK
  */
 int setupIMU(BNO055 *imu);
+/**
+ * Setup IMU for launch phase 
+ * @param imu a pointer to a device descriptor; inst and addr fields should be filled beforehand, primary_mode field is ignored
+ * @param mode 0 for high G detection, 1 for no motion detection
+ * @return an error code; 0 for success, 1 for NAK
+ */
+int setupIMULaunchPhase(BNO055 *imu, int mode);
+/**
+ * Clear interrupt of IMU
+ * @param imu a pointer to a device descriptor; inst and addr fields must be filled beforehand
+ * @return an error code; 0 for success, 1 for NAK
+ */
+int clearINT(BNO055 *imu);
 /**
  * Save calibration data into flash
  * @param imu a pointer to a device descriptor

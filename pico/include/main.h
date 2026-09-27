@@ -27,6 +27,13 @@ void sunSearch();
 void serializeTelemetry(Telemetry *t, uint8_t *b);
 
 /**
+ * GPIO IRQ callback for IMU INT pin
+ * @param _gpio unused
+ * @param _event_mask unused
+ */
+void imu_int_irq(uint _gpio, uint32_t _event_mask);
+
+/**
  * A callback for server, executes different set of commands depending on recived command
  */
 void callback(void *arg);
