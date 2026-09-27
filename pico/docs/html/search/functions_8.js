@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['readavg_0',['readAVG',['../light__sensor_8h.html#ab35faebae5b1517015907a31615552e6',1,'light_sensor.c']]],
-  ['readimu_1',['readIMU',['../imu_8h.html#a6c0f7cf71b131cd84770bd486b8cd9cb',1,'imu.c']]]
+  ['obtainstatus_0',['obtainStatus',['../imu_8h.html#a3a62d8477b1e2b4363c0666030aa3695',1,'imu.c']]]
 ];

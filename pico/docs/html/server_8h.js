@@ -11,6 +11,7 @@ var server_8h =
     [ "SAVE_CALIB_PACKET_TX_LEN", "server_8h.html#aab95864b17dd6f5676f552c763707e3e", null ],
     [ "SEARCH_SUN_PACKET_TX_LEN", "server_8h.html#a55ab8f8d67815798baa3f8609220fc50", null ],
     [ "TCP_PORT", "server_8h.html#a637b73f06ee87043251d022f87a8f3d4", null ],
+    [ "TOGGLE_PARACHUTE_PACKET_TX_LEN", "server_8h.html#a68cf3df98219d1b15b0135b4f2903b9b", null ],
     [ "TOGGLE_WPT_PACKET_TX_LEN", "server_8h.html#a3e5b377251429055a00c39b35e98ba57", null ],
     [ "TX_BUFF_SZ", "server_8h.html#adc755d60a37aa9ec6f622b4a1a40dc68", null ],
     [ "Data_Preparation_Callback", "server_8h.html#a9db83ac17339ebff5ab0c6d338218b07", null ],
