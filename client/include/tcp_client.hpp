@@ -18,6 +18,7 @@ class TCP_Client {
             MOVE,
             TOGGLE_WPT,
             TOGGLE_PARACHUTE,
+            START_TELEM_EXTRACT,
             PING,
             NUM_COMMANDS
         } Command;

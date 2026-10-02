@@ -140,6 +140,7 @@ auto main(int argc, char **argv) -> int {
         ("search-sun-status", "Retrieve status information of sun search program")
         ("parachute", "Toggles parachute servo position")
         ("calib", "Save or load IMU calibration into/from flash", cxxopts::value<std::string>())
+        ("e,extract", "Trigger extraction of launch telemetry data via UART")
         ("h,help", "Print usage")
         ("ip", "IP address of rover's server", cxxopts::value<std::string>())
         ("port", "Port number of rover's server", cxxopts::value<int>())
@@ -231,6 +232,15 @@ auto main(int argc, char **argv) -> int {
         }
         auto data = res.value();
         std::cout << (data[0] == 0x01 ? "Parachute Released" : "Parachute Attached") << std::endl;
+    } else if (result["extract"].as<bool>()) {
+        std::array<uint8_t, 7> opt = {0};
+        auto res = client.sendCommand(TCP_Client::START_TELEM_EXTRACT, opt);
+        if (!(res.has_value())) {
+            std::cerr << "Failed to send extraction command" << std::endl;
+            return 1;
+        }
+        auto data = res.value();
+        std::cout << (data[0] == 0x01 ? "Failed to start extraction of telemetry" : "Extraction started") << std::endl;
     } else if (result["search-sun"].as<bool>()) {
         std::array<uint8_t, 7> opt = {0};
         auto res = client.sendCommand(TCP_Client::SEARCH_SUN, opt);

@@ -34,6 +34,11 @@ void serializeTelemetry(Telemetry *t, uint8_t *b);
 void imu_int_irq(uint _gpio, uint32_t _event_mask);
 
 /**
+ * IRQ handler for initial UART boot select
+ */
+void init_select_irq(void);
+
+/**
  * A callback for server, executes different set of commands depending on recived command
  */
 void callback(void *arg);

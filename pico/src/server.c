@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 
+//#define DEBUG_SERVER
+
 static uint8_t cmd_tx_lens[NUM_COMMAND] = {
     GET_TELEMETRY_PACKET_TX_LEN,
     LOAD_CALIB_PACKET_TX_LEN,
@@ -14,6 +16,7 @@ static uint8_t cmd_tx_lens[NUM_COMMAND] = {
     MOVE_PACKET_TX_LEN,
     TOGGLE_WPT_PACKET_TX_LEN,
     TOGGLE_PARACHUTE_PACKET_TX_LEN,
+    START_TELEM_EXTRACT_PACKET_TX_LEN,
     PING_PACKET_TX_LEN
 };
 
@@ -107,7 +110,9 @@ static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb) {
     srv->poll_count++;
 
     if (srv->poll_count > 3) {
+#ifdef DEBUG_SERVER
         printf("timeout detected disconnecting...\r\n");
+#endif
         srv->poll_count = 0;
         return server_client_disconn(arg);
     }
@@ -116,9 +121,13 @@ static err_t server_poll(void *arg, struct tcp_pcb *conn_pcb) {
 }
 
 static void server_err(void *arg, err_t err) {
+#ifdef DEBUG_SERVER
     printf("server_err: %d\r\n", err);
+#endif
     if (err != ERR_ABRT) {
+#ifdef DEBUG_SERVER
         printf("Critical Error, restarting server\r\n");
+#endif
         server_close(arg);
         server_init((Server*)arg, ((Server*)arg)->cb);
     }
@@ -138,7 +147,9 @@ static err_t server_data_tx(void *arg, struct tcp_pcb *conn_pcb) {
     err_t err = tcp_write(conn_pcb, srv->tx_buff, len <= TX_BUFF_SZ ? len : TX_BUFF_SZ, TCP_WRITE_FLAG_COPY);
 
     if (err != ERR_OK) {
+#ifdef DEBUG_SERVER
         printf("Error on sending\r\n");
+#endif
         return server_client_disconn(arg);
     }
 
@@ -157,7 +168,9 @@ static err_t server_rx(void *arg, struct tcp_pcb *conn_pcb, struct pbuf *rx_data
     Server *srv = (Server*)arg;
 
     if (!rx_data) {
+#ifdef DEBUG_SERVER
         printf("!rx_data\r\n");
+#endif
         (void)server_client_disconn(arg);
         return ERR_VAL;
     }

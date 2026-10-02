@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define DEBUG_IMU 1
+#define DEBUG_IMU 0
 
 #define WRITE_REG(reg, data) \
     { \
@@ -31,18 +31,22 @@
         if (ret == PICO_ERROR_GENERIC) return 1; \
     }
 
-#define FLASH_TARGET_OFFSET (384 * 1024)
+#define FLASH_CALIB_TARGET_OFFSET (448 * 1024)
+#define FLASH_LAUNCH_TELEM_TARGET_OFFSET (512 * 1024)
 
-static const uint8_t *flash_target = (const uint8_t*)(XIP_BASE + FLASH_TARGET_OFFSET);
+const uint8_t *flash_calib_target = (const uint8_t*)(XIP_BASE + FLASH_CALIB_TARGET_OFFSET);
+const uint8_t *flash_launch_telem_target = (const uint8_t*)(XIP_BASE + FLASH_LAUNCH_TELEM_TARGET_OFFSET);
 
 static void flash_write_cb(void *param) {
     uint32_t ofst = ((uintptr_t*)param)[0];
-    const uint8_t *data = (const uint8_t*)(((uintptr_t*)param)[1]);
-    flash_range_program(ofst, data, FLASH_PAGE_SIZE);
+    uint32_t sz = ((uintptr_t*)param)[1];
+    const uint8_t *data = (const uint8_t*)(((uintptr_t*)param)[2]);
+    flash_range_program(ofst, data, sz);
 }
 static void flash_erase_cb(void *param) {
-    uint32_t ofst = (uint32_t)param;
-    flash_range_erase(ofst, FLASH_SECTOR_SIZE);
+    uint32_t ofst = ((uintptr_t*)param)[0];
+    uint32_t sz = ((uintptr_t*)param)[1];
+    flash_range_erase(ofst, sz);
 }
 
 int setupIMULaunchPhase(BNO055 *imu, int mode) {
@@ -56,8 +60,6 @@ int setupIMULaunchPhase(BNO055 *imu, int mode) {
     WRITE_REG(AXIS_MAP_CONFIG, axis.config[0])
     WRITE_REG(AXIS_MAP_SIGN, axis.config[1])
     WRITE_REG(PAGE_ID, 0x01)
-    // Normal, 125 Hz, 16G
-    WRITE_REG(ACC_CONFIG, 0x13)
     sleep_ms(100);
     if (mode == 0) {
         // ACC_HIGH_G
@@ -82,7 +84,7 @@ int setupIMULaunchPhase(BNO055 *imu, int mode) {
     }
     WRITE_REG(PAGE_ID, 0x00)
     sleep_ms(100);
-    WRITE_REG(OPR_MODE, ACCONLY)
+    WRITE_REG(OPR_MODE, IMU)
     sleep_ms(100);
 
     return 0;
@@ -113,6 +115,31 @@ int clearINT(BNO055 *imu) {
     return 0;
 }
 
+int getAcc(BNO055 *imu, uint8_t *buff) {
+    uint8_t reg = ACC_DATA_START;
+    int ret = i2c_write_blocking(imu->inst, imu->addr, &reg, 1, true);
+    if (ret == PICO_ERROR_GENERIC) return 1;
+    ret = i2c_read_blocking(imu->inst, imu->addr, buff, 6, false);
+    if (ret == PICO_ERROR_GENERIC) return 1;
+
+    return 0;
+}
+
+int writeLaunchTelem(uint8_t *buff) {
+    uintptr_t pe[] = {FLASH_LAUNCH_TELEM_TARGET_OFFSET, LAUNCH_TIME_TELEM_SZ};
+    int ret = flash_safe_execute(flash_erase_cb, pe, 2000);
+    if (ret != PICO_OK) return 1;
+    uintptr_t pp[] = {FLASH_LAUNCH_TELEM_TARGET_OFFSET, LAUNCH_TIME_TELEM_SZ, (uintptr_t)buff};
+    ret = flash_safe_execute(flash_write_cb, pp, 2000);
+    if (ret != PICO_OK) return 1;
+
+    return 0;
+}
+
+const uint8_t* getLaunchTelemAddr() {
+    return flash_launch_telem_target;
+}
+
 int saveCalibration(BNO055 *imu) {
     WRITE_REG(OPR_MODE, CONFIG_MODE)
     sleep_ms(100);
@@ -125,19 +152,20 @@ int saveCalibration(BNO055 *imu) {
     ret = i2c_read_blocking(imu->inst, imu->addr, buff, 22, false);
     if (ret == PICO_ERROR_GENERIC) return 1;
 
-    int rc = flash_safe_execute(flash_erase_cb, (void*)FLASH_TARGET_OFFSET, 400);
-    hard_assert(rc == PICO_OK);
+    uintptr_t pe[] = {FLASH_CALIB_TARGET_OFFSET, FLASH_SECTOR_SIZE};
+    int rc = flash_safe_execute(flash_erase_cb, pe, 400);
+    if (rc != PICO_OK) return 2;
 
-    uintptr_t p[] = {FLASH_TARGET_OFFSET, (uintptr_t)buff};
-    rc = flash_safe_execute(flash_write_cb, p, 400);
-    hard_assert(rc == PICO_OK);
+    uintptr_t pp[] = {FLASH_CALIB_TARGET_OFFSET, FLASH_PAGE_SIZE, (uintptr_t)buff};
+    rc = flash_safe_execute(flash_write_cb, pp, 400);
+    if (rc == PICO_OK) return 2;
 
-#ifdef DEBUG_IMU
-    for (int i = 0; i < 22; i++) {
-        printf("0x%02X ", flash_target[i]);
+    if (DEBUG_IMU) {
+        for (int i = 0; i < 22; i++) {
+            printf("0x%02X ", flash_calib_target[i]);
+        }
+        printf("\r\n");
     }
-    printf("\r\n");
-#endif
 
     WRITE_REG(OPR_MODE, imu->primary_mode)
     sleep_ms(100);
@@ -150,14 +178,14 @@ int loadCalibration(BNO055 *imu) {
     sleep_ms(100);
 
     uint8_t buff[22] = {0};
-    memcpy(&(buff[0]), flash_target, 22);
+    memcpy(&(buff[0]), flash_calib_target, 22);
 
-#ifdef DEBUG_IMU
-    for (int i = 0; i < 22; i++) {
-        printf("0x%02X ", flash_target[i]);
+    if (DEBUG_IMU) {
+        for (int i = 0; i < 22; i++) {
+            printf("0x%02X ", flash_calib_target[i]);
+        }
+        printf("\r\n");
     }
-    printf("\r\n");
-#endif
 
     uint8_t reg = CALIB_DATA_START;
     int ret = i2c_write_blocking(imu->inst, imu->addr, &reg, 1, true);

@@ -12,6 +12,7 @@ project(cansat2026 LANGUAGES C CXX ASM)
 pico_sdk_init()
 
 set(SRCS
+    src/button.c
     src/chip_enable.c
     src/imu.c
     src/light_sensor.c
@@ -37,6 +38,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     hardware_pwm
     hardware_sync
     hardware_timer
+    hardware_uart
     hardware_watchdog
     pico_cyw43_arch_lwip_threadsafe_background
     pico_stdlib

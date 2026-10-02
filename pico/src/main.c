@@ -1,9 +1,15 @@
+#include "main.h"
 #include <hardware/adc.h>
-#include <hardware/i2c.h>
+#include <hardware/dma.h>
 #include <hardware/gpio.h>
-#include <hardware/watchdog.h>
+#include <hardware/i2c.h>
+#include <hardware/irq.h>
 #include <hardware/pwm.h>
+#include <hardware/regs/dreq.h>
+#include <hardware/structs/xip_ctrl.h>
 #include <hardware/sync.h>
+#include <hardware/uart.h>
+#include <hardware/watchdog.h>
 
 #include <pico/cyw43_arch.h>
 #include <pico/lwip_nosys.h>
@@ -13,8 +19,10 @@
 
 #include <pico/stdlib.h>
 #include <pico/stdio.h>
+#include <pico/stdio_uart.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "imu.h"
 #include "light_sensor.h"
@@ -22,6 +30,7 @@
 #include "server.h"
 #include "solar.h"
 #include "chip_enable.h"
+#include "button.h"
 
 bool motor_stat = false;
 bool wpt_stat = false;
@@ -29,6 +38,8 @@ bool imu_stat = false;
 bool hg_detected = false;
 bool nm_detected = false;
 bool lp2_configured = false;
+bool skip_pre_launch = false;
+bool readOutLT = false;
 Server server = {0};
 Telemetry telem = {0};
 BNO055 imu = {
@@ -284,6 +295,11 @@ void callback(void *arg) {
             };
             break;
             }
+        case START_TELEM_EXTRACT:
+            {
+            readOutLT = true;
+            break;
+            }
         case PING:
             memcpy(&(srv->tx_buff[0]), "pong\r\n", 6);
             break;
@@ -305,8 +321,25 @@ void imu_int_irq(uint _gpio, uint32_t _event_mask) {
     }
 }
 
+void init_select_irq() {
+    if (!skip_pre_launch) {
+        printf("Skipping pre launch program\r\n");
+        skip_pre_launch = true;
+        while (uart_is_readable(uart0)) {
+            (void)uart_getc(uart0);
+        } 
+    }
+}
+
 int main(void) {
-    stdio_init_all();
+    stdio_uart_init_full(uart0, 9600, 0, 1);
+    
+    irq_set_exclusive_handler(UART0_IRQ, init_select_irq);
+    irq_set_enabled(UART0_IRQ, true);
+    uart_set_irqs_enabled(uart0, true, false);
+    uart_set_fifo_enabled(uart0, false);
+    printf("Hit any key to skip pre launch program\r\n");
+    sleep_ms(5000);
 
     gpio_init_mask((1 << MOTOR_EN_PIN) | (1 << WPT_EN_PIN) | (1 << IMU_RST_PIN));
     gpio_set_dir_out_masked((1 << MOTOR_EN_PIN) | (1 << WPT_EN_PIN) | (1 << IMU_RST_PIN));
@@ -320,18 +353,45 @@ int main(void) {
     gpio_set_function(7, GPIO_FUNC_I2C);
     sleep_ms(500);
 
+    uart_set_irqs_enabled(uart0, false, false);
+    irq_set_enabled(UART0_IRQ, false);
+    uart_set_fifo_enabled(uart0, true);
+
     if (watchdog_caused_reboot()) {
         printf("Reseted by watchdog, continuing to post launch program.\r\n");
-    } else {
+    } else if (!skip_pre_launch) {
+        // PRELAUNCH / LAUNCH PROGRAM START
         printf("Starting pre launch/launch program\r\n");
         gpio_init(IMU_INT_PIN);
         gpio_set_dir(IMU_INT_PIN, false);
         gpio_set_irq_enabled_with_callback(IMU_INT_PIN, GPIO_IRQ_EDGE_RISE, true, imu_int_irq);
+        // Enough for ~7 minutes of acceleration data with 100 samples per second
+        uint8_t telemBuff[LAUNCH_TIME_TELEM_SZ] = {0}; 
+        uint32_t i = 0;
         if (setupIMULaunchPhase(&imu, 0)) {
             printf("Failed to setup IMU for high G detection. Please manually restart the device.\r\n");
             while (1) ;
         }
+        while (!getBootselBtn()) ;
+        printf("Calibrating for acceleration offset, let the rover still in launch position...\r\n");
+        int16_t o[3] = {0};
+        for (int x = 0; x < 10; x++) {
+            int16_t b[3] = {0};
+            getAcc(&imu, (uint8_t*)(&b[0]));
+            o[0] += b[0];
+            o[1] += b[1];
+            o[2] += b[2];
+            sleep_ms(1000);
+        }
+        o[0] = o[0] / 10;
+        o[1] = o[1] / 10;
+        o[2] = o[2] / 10;
+        printf("Complete!\r\n");
+        sleep_ms(100);
+        uint8_t buff[6] = {0};
+        int16_t *t = (int16_t*)(&buff[0]);
         while (1) {
+            /*
             if (hg_detected && !lp2_configured) {
                 clearINT(&imu);
                 if (setupIMULaunchPhase(&imu, 1)) {
@@ -342,14 +402,37 @@ int main(void) {
             }
             if (hg_detected && nm_detected) {
                 printf("Detected Landing, rebooting into post launch program...\r\n");
+                int ret = writeLaunchTelem(telemBuff);
+                if (ret) printf("Failed to save telemetry data\r\n");
                 watchdog_enable(5000, true);
                 while (1) ;
             }
+            if (i+6 < 256 * 1024) {
+                getAcc(&imu, buff);
+                t[0] -= o[0];
+                t[1] -= o[1];
+                t[2] -= o[2];
+                for (int j = 0; j < 6; j++) {
+                    telemBuff[i+j] = buff[j];
+                }
+                i += 6;
+            }
             sleep_ms(10);
+            */
+            getAcc(&imu, buff);
+            printf("%lf, %lf, %lf\r\n",
+                (double)t[0] / 100.0,
+                (double)t[1] / 100.0,
+                (double)t[2] / 100.0
+            );
+            sleep_ms(200);
         }
+        // PRELAUNCH / LAUNCH PROGRAM END
     }
 
     // POST LAUNCH PROGRAM BELOW //
+
+    printf("Starting post launch program...\r\n");
 
     int conn_stat = connectWifi();
     if (conn_stat) {
@@ -404,7 +487,7 @@ int main(void) {
     gpio_set_function(13, GPIO_FUNC_PWM);
     parachute.slice = pwm_gpio_to_slice_num(13);
     parachute.ch = PWM_CHAN_B;
-    initServo(&parachute, 100, 900, 2100);
+    initServo(&parachute, 100, 900, 2700);
 
     gpio_set_function(8, GPIO_FUNC_PWM);
     gpio_set_function(9, GPIO_FUNC_PWM);
@@ -434,6 +517,14 @@ int main(void) {
     while (1) {
         watchdog_update();
         sleep_ms(10);
+        if (readOutLT) {
+            const uint8_t *t = getLaunchTelemAddr();
+            for (uint32_t i = 0; i < 256 * 1024; i++) {
+                uart_putc(uart0, t[i]);
+                if (i % 512 == 0) watchdog_update();
+            }
+            readOutLT = false;
+        }
         int s = cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA);
         switch (s) {
             case CYW43_LINK_FAIL:

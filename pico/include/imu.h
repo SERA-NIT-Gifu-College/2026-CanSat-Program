@@ -9,6 +9,7 @@
 #include <hardware/i2c.h>
 
 #define IMU_INT_PIN 5 //!< GPIO number to IMU interrupt signal pin
+#define LAUNCH_TIME_TELEM_SZ (256 * 1024)
 
 /** Union for spliting values for AXIS_MAP_CONFIG and AXIS_MAP_SIGN */
 typedef union {
@@ -44,6 +45,7 @@ typedef enum {
     AXIS_MAP_SIGN,
     SIC_MATRIX_START = 0x43,
     CALIB_DATA_START = 0x55,
+    ACC_OFST_START = 0x55,
 
     // Page 1
     ACC_CONFIG = 0x08,
@@ -126,6 +128,25 @@ int setupIMULaunchPhase(BNO055 *imu, int mode);
  * @return an error code; 0 for success, 1 for NAK
  */
 int clearINT(BNO055 *imu);
+/**
+ * Obtain acceleration data
+ * @param imu a pointer to a device descriptor
+ * @param buff a pointer to at least 6 bytes long array
+ * @return an error code; 0 for success, 1 for NAK
+ */
+int getAcc(BNO055 *imu, uint8_t *buff);
+/**
+ * Write launch time telemetry to flash
+ * @param imu a pointer to a device descriptor
+ * @param buff a pointer to a buffer whose size is 256 kB
+ * @return an error code; 0 for success, 1 for NAK
+ */
+int writeLaunchTelem(uint8_t *buff);
+/**
+ * Get address of launch time telemetry data
+ * @return address of telemetry data
+ */
+const uint8_t* getLaunchTelemAddr(void);
 /**
  * Save calibration data into flash
  * @param imu a pointer to a device descriptor

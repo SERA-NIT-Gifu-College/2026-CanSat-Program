@@ -23,6 +23,7 @@
 #define MOVE_PACKET_TX_LEN 1                //!< TX packet size for MOVE
 #define TOGGLE_WPT_PACKET_TX_LEN 1          //!< TX packet size for TOGGLE_WPT
 #define TOGGLE_PARACHUTE_PACKET_TX_LEN 1    //!< TX packet size for TOGGLE_PARACHUTE
+#define START_TELEM_EXTRACT_PACKET_TX_LEN 1 //!< TX packet size for START_TELEM_EXTRACT
 
 /** Function prototype for callback function */
 typedef void (*Data_Preparation_Callback)(void*);
@@ -36,6 +37,7 @@ typedef enum {
     MOVE,
     TOGGLE_WPT,
     TOGGLE_PARACHUTE,
+    START_TELEM_EXTRACT,
     PING,
     NUM_COMMAND
 } Command;
