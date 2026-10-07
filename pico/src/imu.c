@@ -51,7 +51,8 @@ static void flash_erase_cb(void *param) {
 
 int setupIMULaunchPhase(BNO055 *imu, int mode) {
     BNO055_Axis_CFG axis;
-    axis.cfg = P1;
+    axis.config[0] = 0x09;
+    axis.config[1] = 0x04;
     WRITE_REG(PAGE_ID, 0x00)
     sleep_ms(100);
     WRITE_REG(OPR_MODE, CONFIG_MODE)
@@ -92,7 +93,8 @@ int setupIMULaunchPhase(BNO055 *imu, int mode) {
 
 int setupIMU(BNO055 *imu) {
     BNO055_Axis_CFG axis;
-    axis.cfg = P1;
+    axis.config[0] = 0x09;
+    axis.config[1] = 0x04;
     WRITE_REG(PAGE_ID, 0x00)
     sleep_ms(100);
     WRITE_REG(OPR_MODE, CONFIG_MODE)

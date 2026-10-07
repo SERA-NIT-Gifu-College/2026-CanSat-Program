@@ -53,3 +53,5 @@ pico_enable_stdio_usb(${PROJECT_NAME} OFF)
 pico_enable_stdio_uart(${PROJECT_NAME} ON)
 
 pico_add_extra_outputs(${PROJECT_NAME})
+
+include(test/rotation/CMakeLists.txt)

@@ -10,9 +10,11 @@
 #include <stdbool.h>
 #include <hardware/timer.h>
 
+#ifndef USE_VARIABLE_GAIN
 #define GAIN_P (1.0f)               //!< Proportional gain for wheel drive
 #define GAIN_I (1.0f)               //!< Integral gain for wheel drive
 #define GAIN_D (1.0f)               //!< Derivative gain for wheel drive
+#endif
 
 #define TARGET_ANGLE_MARGIN (2.0f)  //!< +/- Angle margin for wheel drive
 
@@ -31,13 +33,16 @@ typedef enum {
 
 /** PID controller descriptor */
 typedef struct {
-    uint16_t target;
-    uint16_t current;
+    double target;
+    double current;
     uint64_t time_prev;
     uint64_t time_curr;
     double prev_err;
     double int_err;
     bool onTarget;
+#ifdef USE_VARIABLE_GAIN
+    double gain[3];
+#endif // USE_VARIABLE_GAIN
 } PIDController;
 
 /** Wheel motors descriptor */
@@ -84,10 +89,10 @@ int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t 
 /**
  * PID controller loop function for wheels; runs single "tick" of control
  * @param w a pointer to wheels descriptor
- * @param imu_heading IMU reading of heading
+ * @param imu_heading IMU reading of heading in degree
  * @return 0 for success tick, 1 for rejected tick
  */
-int wheelsPIDTick(Wheels *w, uint16_t imu_heading);
+int wheelsPIDTick(Wheels *w, double imu_heading);
 
 /**
  * Initialize servo with specified frequency, min and max pulse width
