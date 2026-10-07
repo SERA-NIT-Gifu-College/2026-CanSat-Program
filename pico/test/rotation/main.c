@@ -23,8 +23,8 @@
 
 BNO055 imu = {.inst = i2c1, .addr = 0x28, .primary_mode = NDOF};
 Wheels w = {0};
-PIDController c = {0};
 Server server = {0};
+bool setAngle = false;
 
 void connectWifi(void) {
     if (cyw43_arch_init_with_country(CYW43_COUNTRY_JAPAN)) {
@@ -72,17 +72,6 @@ void callback(void *arg) {
             obtainStatus(&imu, &buff[12], &buff[10], &buff[11]);
             memcpy(srv->tx_buff, buff, TX_BUFF_SZ);
             break;
-        case SAVE_CALIB:
-            // repurposed for on-demand PID gain setting
-            uint16_t pr = (uint16_t)(srv->rx_buff[1] << 8) | (srv->rx_buff[2]);
-            uint16_t ir = (uint16_t)(srv->rx_buff[3] << 8) | (srv->rx_buff[4]);
-            uint16_t dr = (uint16_t)(srv->rx_buff[5] << 8) | (srv->rx_buff[6]);
-            c.gain[0] = pr/1000.0;
-            c.gain[1] = ir/1000.0;
-            c.gain[2] = dr/1000.0;
-            printf("%ld, %ld, %ld\r\n", c.gain[0], c.gain[1], c.gain[2]);
-            memcpy(srv->tx_buff, "u\r\n", 4);
-            break;
         case MOVE:
             {
             MoveMode mode = srv->rx_buff[1];
@@ -111,6 +100,7 @@ void callback(void *arg) {
                     {
                     uint16_t angle = ((uint16_t)(srv->rx_buff[2]) << 8) | (srv->rx_buff[3]);
                     int res = setTargetAngle(&w, angle);
+                    setAngle = true;
                     buff[0] = res;
                     memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                     break;
@@ -118,11 +108,12 @@ void callback(void *arg) {
                 case DELTA_ANGLE:
                     {
                     int16_t angle = (int16_t)(((uint16_t)(srv->rx_buff[2]) << 8) | (srv->rx_buff[3]));
-                    angle = w.pid->current + angle;
+                    angle = w.target + angle;
                     if (angle < 0) {
                         angle = 360 + angle;
                     }
                     int res = setTargetAngle(&w, angle);
+                    setAngle = true;
                     buff[0] = res;
                     memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                     break;
@@ -162,7 +153,7 @@ int main(void) {
     gpio_set_function(11, GPIO_FUNC_PWM);
     w.slice_m1 = pwm_gpio_to_slice_num(8);
     w.slice_m2 = pwm_gpio_to_slice_num(10);
-    initWheels(&w, &c);
+    initWheels(&w);
 
     printf("Setting up server...\r\n");
     server_init(&server, callback);
@@ -170,16 +161,32 @@ int main(void) {
     printf("Complete!\r\n");
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    int16_t b[3] = {0};
-    const double dt = 0.1;
+    uint16_t b[3] = {0};
 
     while (1) {
-        readIMU(&imu, b);
-        c.current = b[0] / 16.0;
-        double e = c.target - c.current;
-        double u = c.gain[0] * e;
-        printf("u = %lf\r\n", u);
-        sleep_ms(100);
+        if (setAngle) {
+            readIMU(&imu, b);
+            double current = (int16_t)b[0] / 16.0;
+            double e = w.target - current;
+            bool rotDir = e > 0.0;
+            if ((e < 0.0 ? -e : e) > TARGET_ANGLE_MARGIN) {
+                pwm_set_both_levels(w.slice_m1,
+                    rotDir ? 5000 : 0,
+                    rotDir ? 0 : 5000
+                );
+                pwm_set_both_levels(w.slice_m2,
+                    rotDir ? 0 : 5000,
+                    rotDir ? 5000 : 0
+                );
+            } else {
+                w.running_1 = false;
+                w.running_2 = false;
+                setAngle = false;
+                pwm_set_both_levels(w.slice_m1, 0, 0);
+                pwm_set_both_levels(w.slice_m2, 0, 0);
+            }
+        }
+        sleep_ms(10);
     }
 
     return 0;

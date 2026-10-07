@@ -10,17 +10,9 @@
 #include <stdbool.h>
 #include <hardware/timer.h>
 
-#ifndef USE_VARIABLE_GAIN
-#define GAIN_P (1.0f)               //!< Proportional gain for wheel drive
-#define GAIN_I (1.0f)               //!< Integral gain for wheel drive
-#define GAIN_D (1.0f)               //!< Derivative gain for wheel drive
-#endif
-
 #define TARGET_ANGLE_MARGIN (2.0f)  //!< +/- Angle margin for wheel drive
 
 #define ANGLE_RESOLUTION (8.0f)     //!< Angle resolution for servo motor; minimum angle difference will be inverse of this value
-
-#define PID_TIME_KEEPING_TIMER_HW timer1_hw
 
 /** Move modes */
 typedef enum {
@@ -31,27 +23,13 @@ typedef enum {
     NUM_MOVE_MODE
 } MoveMode;
 
-/** PID controller descriptor */
-typedef struct {
-    double target;
-    double current;
-    uint64_t time_prev;
-    uint64_t time_curr;
-    double prev_err;
-    double int_err;
-    bool onTarget;
-#ifdef USE_VARIABLE_GAIN
-    double gain[3];
-#endif // USE_VARIABLE_GAIN
-} PIDController;
-
 /** Wheel motors descriptor */
 typedef struct {
     uint8_t slice_m1;
     uint8_t slice_m2;
     bool running_1;
     bool running_2;
-    PIDController *pid;
+    double target;
 } Wheels;
 
 /** Cycle controlled servo motor descriptor */
@@ -66,9 +44,8 @@ typedef struct {
 /**
  * Initialize wheels' PWM and descriptor
  * @param w a pointer to wheels descriptor
- * @param pid a pointer to PID controller descriptor
  */
-void initWheels(Wheels *w, PIDController *pid);
+void initWheels(Wheels *w);
 /**
  * Sets and start angle/heading control
  * @param w a pointer to wheels descriptor
@@ -86,13 +63,6 @@ int setTargetAngle(Wheels *w, uint16_t d);
  * @return 0 for success, 1 for rejected request
  */
 int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2);
-/**
- * PID controller loop function for wheels; runs single "tick" of control
- * @param w a pointer to wheels descriptor
- * @param imu_heading IMU reading of heading in degree
- * @return 0 for success tick, 1 for rejected tick
- */
-int wheelsPIDTick(Wheels *w, double imu_heading);
 
 /**
  * Initialize servo with specified frequency, min and max pulse width

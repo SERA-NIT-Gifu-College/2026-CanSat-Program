@@ -39,11 +39,9 @@ static int64_t wheel_alarm_cb_2(alarm_id_t _id, void *data) {
     return 0;
 }
 
-void initWheels(Wheels *w, PIDController *pid) {
+void initWheels(Wheels *w) {
     const float wrap_v = 10000.f;
 
-    w->pid = pid;
-    w->pid->onTarget = true;
     w->running_1 = false;
     w->running_2 = false;
     pwm_config c = pwm_get_default_config();
@@ -91,71 +89,7 @@ int setTargetAngle(Wheels *w, uint16_t angle) {
     }
     w->running_1 = true;
     w->running_2 = true;
-    w->pid->target = angle;
-    w->pid->onTarget = false;
-    w->pid->time_prev = 0;
-    w->pid->time_curr = 0;
-    w->pid->prev_err = 0;
-    w->pid->int_err = 0;
-    // reset timer
-    PID_TIME_KEEPING_TIMER_HW->timelw = 0x0000;
-    PID_TIME_KEEPING_TIMER_HW->timehw = 0x0000;
-    return 0;
-}
-
-int wheelsPIDTick(Wheels *w, double imuHeading) {
-    PIDController *pid = w->pid;
-
-    pid->time_curr = timer_time_us_64(PID_TIME_KEEPING_TIMER_HW);
-
-    pid->current = imuHeading;
-    double dt = (double)(pid->time_curr - pid->time_prev) / (1000.0 * 1000.0);
-    double e = pid->target - pid->current;
-
-    if ((e < 0.0 ? -e : e) > TARGET_ANGLE_MARGIN) {
-        pid->onTarget = true;
-        return 0;
-    }
-
-    double de = (e - pid->prev_err)/dt;
-    pid->int_err = pid->int_err + ((e + pid->prev_err) * (dt/2.0));
-
-#ifdef USE_VARIABLE_GAIN
-    double u = (pid->gain[0] * e) + (pid->gain[1] * pid->int_err) + (pid->gain[2] * de);
-#else
-    double u = (GAIN_P * e) + (GAIN_I * pid->int_err) + (GAIN_D * de);
-#endif
-
-    // clamp value
-    if (u > 10000.0) {
-#ifdef DEBUG_MOTOR
-        printf("PID: Overshoot, u = %lf\r\n", u);
-#endif
-        u = 10000.0;
-    }
-    if (u < -10000.0) {
-#ifdef DEBUG_MOTOR
-        printf("PID: Undershoot, u = %lf\r\n", u);
-#endif
-        u = -10000.0;
-    }
-
-#ifdef MOTOR_DRY_RUN
-    printf("t = %ld, u = %lf\r\n", pid->time_curr, u);
-#else
-    pwm_set_both_levels(w->slice_m1,
-        u > 0.0 ? (uint16_t)u : 0,
-        u < 0.0 ? (uint16_t)(-u) : 0
-    );
-    pwm_set_both_levels(w->slice_m2,
-        u < 0.0 ? (uint16_t)(-u) : 0,
-        u > 0.0 ? (uint16_t)u : 0
-    );
-#endif
-
-    pid->time_prev = pid->time_curr;
-    pid->prev_err = e;
-    
+    w->target = angle;
     return 0;
 }
 
