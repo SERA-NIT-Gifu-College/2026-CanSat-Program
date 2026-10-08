@@ -55,3 +55,4 @@ pico_enable_stdio_uart(${PROJECT_NAME} ON)
 pico_add_extra_outputs(${PROJECT_NAME})
 
 include(test/rotation/CMakeLists.txt)
+include(test/axis-remap/CMakeLists.txt)

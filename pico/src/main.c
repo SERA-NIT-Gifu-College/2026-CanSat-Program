@@ -49,7 +49,6 @@ BNO055 imu = {
 };
 Servo pannel = {0};
 Servo parachute = {0};
-PIDController pid = {0};
 Wheels wheels = {0};
 SunSearchSM sssm = {0};
 
@@ -91,66 +90,20 @@ void sunSearch() {
         case SUNSEARCH_IDLE:
             break;
         case SUNSEARCH_ROTATE_HEADING:
-            if (wheels.pid->onTarget && !(sssm.transition)) {
-                sssm.transition = true;
-                setTargetAngle(&wheels, sssm.heading);
-            } else if (wheels.pid->onTarget && sssm.transition) {
-                sssm.state = SUNSEARCH_SCAN_HEADING;
-                sssm.transition = false;
-            }
             break;
         case SUNSEARCH_SCAN_HEADING:
             {
-            uint16_t bh = readAVG();
-            if (sssm.brightness < bh) {
-                sssm.brightness = bh;
-                sssm.max_brightness_heading = sssm.heading;
-            }
-            sssm.heading += 45;
-            if (sssm.heading == 360) {
-                sssm.heading = 0;
-                sssm.brightness = 0;
-                sssm.state = SUNSEARCH_ROTATE_BRIGHTEST;
-            } else {
-                sssm.state = SUNSEARCH_ROTATE_HEADING;
-            }
             break;
             }
         case SUNSEARCH_ROTATE_BRIGHTEST:
-            if (wheels.pid->onTarget && !(sssm.transition)) {
-                sssm.transition = true;
-                setTargetAngle(&wheels, sssm.max_brightness_heading);
-            } else if (wheels.pid->onTarget && sssm.transition) {
-                sssm.state = SUNSEARCH_PITCH_UP;
-                sssm.transition = false;
-                break;
-            } 
             break;
         case SUNSEARCH_PITCH_UP:
-            setServoAngle(&pannel, sssm.pitch);
-            sleep_ms(200);
-            sssm.state = SUNSEARCH_SCAN_PITCH;
             break;
         case SUNSEARCH_SCAN_PITCH:
             {
-            uint16_t bp = readAVG();
-            if (sssm.brightness < bp) {
-                sssm.brightness = bp;
-                sssm.max_brightness_pitch = sssm.pitch;
-            }
-            sssm.pitch += 90;
-            if (sssm.pitch == 360) {
-                sssm.pitch = 0;
-                sssm.brightness = 0;
-                sssm.state = SUNSEARCH_SET_PITCH;
-            } else {
-                sssm.state = SUNSEARCH_SET_PITCH;
-            }
             break;
             }
         case SUNSEARCH_SET_PITCH:
-            setServoAngle(&pannel, sssm.pitch);
-            sssm.state = SUNSEARCH_IDLE;
             break;
         default:
             break;
@@ -280,12 +233,12 @@ void callback(void *arg) {
                     }
                 case DELTA_ANGLE:
                     {
-                    int16_t angle = (int16_t)(((uint16_t)(srv->rx_buff[2]) << 8) | (srv->rx_buff[3]));
-                    angle = wheels.pid->current + angle;
-                    if (angle < 0) {
-                        angle = 360 + angle;
+                    int16_t ang = (int16_t)(((uint16_t)(srv->rx_buff[2]) << 8) | (srv->rx_buff[3]));
+                    ang = wheels.target + ang;
+                    if (ang < 0) {
+                        ang = 360 + ang;
                     }
-                    int res = setTargetAngle(&wheels, angle);
+                    int res = setTargetAngle(&wheels, ang);
                     buff[0] = res;
                     memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                     break;
@@ -495,7 +448,7 @@ int main(void) {
     gpio_set_function(11, GPIO_FUNC_PWM);
     wheels.slice_m1 = pwm_gpio_to_slice_num(8);
     wheels.slice_m2 = pwm_gpio_to_slice_num(10);
-    initWheels(&wheels, &pid);
+    initWheels(&wheels);
     enableChips((motor_stat = false), wpt_stat, imu_stat);
 
     err_t e = server_init(&server, callback);
@@ -541,11 +494,6 @@ int main(void) {
                 break;
             default:
                 break;
-        }
-        if (!(wheels.pid->onTarget)) {
-            uint16_t euler[3] = {0};
-            (void)readIMU(&imu, euler);
-            wheelsPIDTick(&wheels, euler[0]);
         }
         if (!(wheels.running_1 || wheels.running_2)) {
             enableChips((motor_stat = false), wpt_stat, imu_stat);

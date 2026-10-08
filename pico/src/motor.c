@@ -15,7 +15,7 @@
 static int64_t wheel_alarm_cb_1(alarm_id_t _id, void *data) {
     Wheels *w = (Wheels*)data;
 
-    pwm_set_both_levels(w->slice_m1, 0, 0);
+    pwm_set_both_levels(w->slice_m1, 10000, 10000);
 
     w->running_1 = false;
 
@@ -28,7 +28,7 @@ static int64_t wheel_alarm_cb_1(alarm_id_t _id, void *data) {
 static int64_t wheel_alarm_cb_2(alarm_id_t _id, void *data) {
     Wheels *w = (Wheels*)data;
 
-    pwm_set_both_levels(w->slice_m2, 0, 0);
+    pwm_set_both_levels(w->slice_m2, 10000, 10000);
 
     w->running_2 = false;
 
@@ -52,8 +52,8 @@ void initWheels(Wheels *w) {
     pwm_init(w->slice_m1, &c, false);
     pwm_init(w->slice_m2, &c, false);
 
-    pwm_set_both_levels(w->slice_m1, 0, 0);
-    pwm_set_both_levels(w->slice_m2, 0, 0);
+    pwm_set_both_levels(w->slice_m1, 10000, 10000);
+    pwm_set_both_levels(w->slice_m2, 10000, 10000);
 }
 
 int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2) {

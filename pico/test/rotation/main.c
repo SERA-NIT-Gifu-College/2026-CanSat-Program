@@ -14,8 +14,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define USE_VARIABLE_GAIN
-
 #include "imu.h"
 #include "motor.h"
 #include "server.h"
@@ -163,30 +161,43 @@ int main(void) {
 
     uint16_t b[3] = {0};
 
+    double pe = 0;
+    double i = 0;
+
+    double kp = 50;
+    double ki = 100;
+
     while (1) {
         if (setAngle) {
             readIMU(&imu, b);
             double current = (int16_t)b[0] / 16.0;
             double e = w.target - current;
-            bool rotDir = e > 0.0;
+            i = i + ((e + pe) * (0.1/2.0));
             if ((e < 0.0 ? -e : e) > TARGET_ANGLE_MARGIN) {
+                double u = (kp * e) + (ki * e);
+                printf("u = %lf\r\n", u);
+                if ((u < 0.0 ? -u : u) > 10000) u = 10000 * (u > 0.0 ? 1 : -1);
                 pwm_set_both_levels(w.slice_m1,
-                    rotDir ? 5000 : 0,
-                    rotDir ? 0 : 5000
+                    u > 0.0 ? u : 0,
+                    u > 0.0 ? 0 : -u
                 );
                 pwm_set_both_levels(w.slice_m2,
-                    rotDir ? 0 : 5000,
-                    rotDir ? 5000 : 0
+                    u > 0.0 ? 0 : -u,
+                    u > 0.0 ? u : 0
                 );
             } else {
+                setAngle = false;
                 w.running_1 = false;
                 w.running_2 = false;
-                setAngle = false;
-                pwm_set_both_levels(w.slice_m1, 0, 0);
-                pwm_set_both_levels(w.slice_m2, 0, 0);
+                pwm_set_both_levels(w.slice_m1, 10000, 10000);
+                pwm_set_both_levels(w.slice_m2, 10000, 10000);
+                pe = 0;
+                i = 0;
+                continue;
             }
+            pe = e;
         }
-        sleep_ms(10);
+        sleep_ms(100);
     }
 
     return 0;
