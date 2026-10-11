@@ -106,6 +106,8 @@ auto move_rover(MoveMode m, MoveParam *p, TCP_Client &c) -> int {
             opt[1] = (uint8_t)((p->angle & 0xFF00) >> 8);
             opt[2] = (uint8_t)(p->angle & 0x00FF);
             break;
+        case MoveMode::STOP:
+            break;
         default:
             std::cout << "Invalid Mode" << std::endl;
             return 1;
@@ -131,7 +133,7 @@ auto main(int argc, char **argv) -> int {
         ("f,follow", "Follow/Poll telemetry")
         ("p,ping", "Send PING packet to rover")
         ("c,ping-count", "Number of ping to send", cxxopts::value<int>()->default_value("1"))
-        ("m,move", "Drive mode of rover, options are: straight, independent, abs_angle, delta_angle", cxxopts::value<std::string>())
+        ("m,move", "Drive mode of rover, options are: straight, independent, abs_angle, delta_angle, and stop", cxxopts::value<std::string>())
         ("s,speed", "PWM value(s) for rover drive, value(s) is 0~100", cxxopts::value<std::vector<int>>())
         ("a,angle", "Target angle for abs_angle or angle difference for delta_angle", cxxopts::value<int>())
         ("t,timeout", "Ping interval, telemetry poll interval or move command duration in milliseconds; use list of two intervals for independent move command", cxxopts::value<std::vector<int>>()->default_value("1000,0"))
@@ -141,6 +143,8 @@ auto main(int argc, char **argv) -> int {
         ("parachute", "Toggles parachute servo position")
         ("calib", "Save or load IMU calibration into/from flash", cxxopts::value<std::string>())
         ("e,extract", "Trigger extraction of launch telemetry data via UART")
+        ("watchdog-reset", "Trigger watchdog reset, emergency only")
+        ("skip-heading", "skip heading for sun search", cxxopts::value<bool>()->default_value("false"))
         ("h,help", "Print usage")
         ("ip", "IP address of rover's server", cxxopts::value<std::string>())
         ("port", "Port number of rover's server", cxxopts::value<int>())
@@ -214,6 +218,10 @@ auto main(int argc, char **argv) -> int {
             return 1;
         }
         std::cout << "Calibration operation complete" << std::endl;
+    } else if (result["watchdog-reset"].as<bool>()) {
+        std::array<uint8_t, 7> opt = {0};
+        auto res = client.sendCommand(TCP_Client::WD_RESET, opt);
+        std::cout << "Watchdog reset triggered" << std::endl;
     } else if (result["wireless-power-transmit"].as<bool>()) {
         std::array<uint8_t, 7> opt = {0};
         auto res = client.sendCommand(TCP_Client::TOGGLE_WPT, opt);
@@ -243,6 +251,7 @@ auto main(int argc, char **argv) -> int {
         std::cout << (data[0] == 0x01 ? "Failed to start extraction of telemetry" : "Extraction started") << std::endl;
     } else if (result["search-sun"].as<bool>()) {
         std::array<uint8_t, 7> opt = {0};
+        opt[1] = result["skip-heading"].as<bool>() ? 1 : 0;
         auto res = client.sendCommand(TCP_Client::SEARCH_SUN, opt);
         if (!(res.has_value())) {
             std::cerr << "Failed to start execution of program" << std::endl;
@@ -265,7 +274,8 @@ auto main(int argc, char **argv) -> int {
             {"straight", MoveMode::STRAIGHT},
             {"independent", MoveMode::INDEPENDENT},
             {"abs_angle", MoveMode::ABS_ANGLE},
-            {"delta_angle", MoveMode::DELTA_ANGLE}
+            {"delta_angle", MoveMode::DELTA_ANGLE},
+            {"stop", MoveMode::STOP}
         };
 
         auto m = result["move"].as<std::string>();
@@ -292,6 +302,9 @@ auto main(int argc, char **argv) -> int {
             case MoveMode::ABS_ANGLE:
             case MoveMode::DELTA_ANGLE:
                 param.angle = result["angle"].as<int>();
+                break;
+            case MoveMode::STOP:
+                break;
             default:
                 break;
         }

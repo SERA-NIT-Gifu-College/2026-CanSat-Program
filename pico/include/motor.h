@@ -8,7 +8,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <hardware/timer.h>
+#include <pico/time.h>
+
+#define GAIN_P (40.0)
+#define GAIN_I (10.0)
+#define GAIN_D (7.0)
+#define PID_TIME (0.01)
 
 #define TARGET_ANGLE_MARGIN (2.0f)  //!< +/- Angle margin for wheel drive
 
@@ -20,6 +25,7 @@ typedef enum {
     INDEPENDENT,
     ABS_ANGLE,
     DELTA_ANGLE,
+    STOP,
     NUM_MOVE_MODE
 } MoveMode;
 
@@ -29,7 +35,13 @@ typedef struct {
     uint8_t slice_m2;
     bool running_1;
     bool running_2;
+    bool isInAngleControlMode;
+    bool onTarget;
     double target;
+    double previous_error;
+    double integral_val;
+    alarm_id_t m1_timer;
+    alarm_id_t m2_timer;
 } Wheels;
 
 /** Cycle controlled servo motor descriptor */
@@ -63,6 +75,8 @@ int setTargetAngle(Wheels *w, uint16_t d);
  * @return 0 for success, 1 for rejected request
  */
 int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2);
+
+void angleControlPIDTick(Wheels *w, double angle);
 
 /**
  * Initialize servo with specified frequency, min and max pulse width

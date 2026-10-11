@@ -39,6 +39,7 @@ bool hg_detected = false;
 bool nm_detected = false;
 bool lp2_configured = false;
 bool skip_pre_launch = false;
+bool skip_heading_control = false;
 bool readOutLT = false;
 Server server = {0};
 Telemetry telem = {0};
@@ -89,22 +90,91 @@ void sunSearch() {
     switch (sssm.state) {
         case SUNSEARCH_IDLE:
             break;
-        case SUNSEARCH_ROTATE_HEADING:
+        case SUNSEARCH_INIT:
+            {
+            sssm.pitch = 40.0;
+            setServoAngle(&pannel, 40.0);
+            if (skip_heading_control) {
+                sssm.state = SUNSEARCH_PITCH_UP;
+                break;
+            }
+            if (!(sssm.init) && wheels.onTarget) {
+                setTargetAngle(&wheels, 315);
+                sssm.init = true;
+                sssm.heading = 315;
+            } else if (sssm.init && wheels.onTarget) {
+                sssm.state = SUNSEARCH_SCAN_HEADING;
+            }
             break;
+            }
+        case SUNSEARCH_ROTATE_HEADING:
+            {
+            if (!(sssm.transition) && wheels.onTarget) {
+                sssm.transition = true;
+                setTargetAngle(&wheels, sssm.heading);
+            } else if (sssm.transition && wheels.onTarget) {
+                sssm.transition = false;
+                sssm.state = SUNSEARCH_SCAN_HEADING;
+                break;
+            }
+            break;
+            }
         case SUNSEARCH_SCAN_HEADING:
             {
+            uint16_t b = getGen();
+            if (sssm.brightness < b) {
+                sssm.max_brightness_heading = sssm.heading;
+                sssm.brightness = b;
+            }
+            if (sssm.heading != 0) {
+                sssm.heading -= 45;
+                sssm.state = SUNSEARCH_ROTATE_HEADING;
+            } else {
+                sssm.state = SUNSEARCH_ROTATE_BRIGHTEST;
+            }
             break;
             }
         case SUNSEARCH_ROTATE_BRIGHTEST:
+            {
+            if (!(sssm.transition) && wheels.onTarget) {
+                sssm.transition = true;
+                setTargetAngle(&wheels, sssm.max_brightness_heading);
+            } else if (sssm.transition && wheels.onTarget) {
+                sssm.transition = false;
+                sssm.brightness = 0;
+                sssm.state = SUNSEARCH_PITCH_UP;
+            }
             break;
+            }
         case SUNSEARCH_PITCH_UP:
+            {
+            float angle = pannel.angle + 20;
+            if (angle > 220.0) {
+                sssm.state = SUNSEARCH_SET_PITCH;
+                break;
+            }
+            sssm.pitch = angle;
+            setServoAngle(&pannel, angle);
+            sleep_ms(500);
+            sssm.state = SUNSEARCH_SCAN_PITCH;
             break;
+            }
         case SUNSEARCH_SCAN_PITCH:
             {
+            uint16_t b = getGen();
+            if (sssm.brightness < b) {
+                sssm.max_brightness_pitch = sssm.pitch;
+                sssm.brightness = b;
+            }
+            sssm.state = SUNSEARCH_PITCH_UP;
             break;
             }
         case SUNSEARCH_SET_PITCH:
+            {
+            setServoAngle(&pannel, sssm.max_brightness_pitch);
+            sssm.state = SUNSEARCH_IDLE;
             break;
+            }
         default:
             break;
     }
@@ -194,14 +264,15 @@ void callback(void *arg) {
                 memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                 break;
             }
-            sssm.state = SUNSEARCH_SCAN_HEADING;
+            sssm.state = SUNSEARCH_INIT;
+            skip_heading_control = srv->rx_buff[2];
+            sssm.init = false;
             buff[0] = 0x00;
             memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
             break;
         case MOVE:
             {
             MoveMode mode = srv->rx_buff[1];
-            enableChips((motor_stat = true), wpt_stat, imu_stat);
             switch (mode) {
                 case STRAIGHT:
                     {
@@ -243,6 +314,20 @@ void callback(void *arg) {
                     memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                     break;
                     }
+                case STOP:
+                    {
+                    wheels.isInAngleControlMode = false;
+                    wheels.running_1 = false;
+                    wheels.running_2 = false;
+                    cancel_alarm(wheels.m1_timer);
+                    cancel_alarm(wheels.m2_timer);
+                    pwm_set_both_levels(wheels.slice_m1, 10000, 10000);
+                    pwm_set_both_levels(wheels.slice_m2, 10000, 10000);
+                    sssm.state = SUNSEARCH_IDLE;
+                    buff[0] = 0;
+                    memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                    break;
+                    }
                 default:
                     break;
             };
@@ -251,6 +336,11 @@ void callback(void *arg) {
         case START_TELEM_EXTRACT:
             {
             readOutLT = true;
+            break;
+            }
+        case WD_RESET:
+            {
+            watchdog_enable(3000, false);
             break;
             }
         case PING:
@@ -326,6 +416,7 @@ int main(void) {
             while (1) ;
         }
         while (!getBootselBtn()) ;
+        sleep_ms(60*1000);
         printf("Calibrating for acceleration offset, let the rover still in launch position...\r\n");
         int16_t o[3] = {0};
         for (int x = 0; x < 10; x++) {
@@ -344,7 +435,6 @@ int main(void) {
         uint8_t buff[6] = {0};
         int16_t *t = (int16_t*)(&buff[0]);
         while (1) {
-            /*
             if (hg_detected && !lp2_configured) {
                 clearINT(&imu);
                 if (setupIMULaunchPhase(&imu, 1)) {
@@ -353,7 +443,7 @@ int main(void) {
                 }
                 lp2_configured = true;
             }
-            if (hg_detected && nm_detected) {
+            if ((hg_detected && nm_detected) || getBootselBtn()) {
                 printf("Detected Landing, rebooting into post launch program...\r\n");
                 int ret = writeLaunchTelem(telemBuff);
                 if (ret) printf("Failed to save telemetry data\r\n");
@@ -371,14 +461,6 @@ int main(void) {
                 i += 6;
             }
             sleep_ms(10);
-            */
-            getAcc(&imu, buff);
-            printf("%lf, %lf, %lf\r\n",
-                (double)t[0] / 100.0,
-                (double)t[1] / 100.0,
-                (double)t[2] / 100.0
-            );
-            sleep_ms(200);
         }
         // PRELAUNCH / LAUNCH PROGRAM END
     }
@@ -412,12 +494,11 @@ int main(void) {
 
     printf("Connected to Wifi! IP address is: %s\r\n", inet_ntoa(netif_default->ip_addr.addr));
 
-    watchdog_enable(1000, true);
 
     watchdog_update();
     if (setupIMU(&imu)) {
         printf("Failed to init IMU, restarting...\r\n");
-        watchdog_update();
+        watchdog_enable(1000, true);
         while (1) {
             cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
             sleep_ms(100);
@@ -425,8 +506,6 @@ int main(void) {
             sleep_ms(200);
         }
     }
-
-    watchdog_update();
 
     adc_init();
     setupLightSensor();
@@ -442,6 +521,8 @@ int main(void) {
     parachute.ch = PWM_CHAN_B;
     initServo(&parachute, 100, 900, 2700);
 
+    setServoAngle(&pannel, 40.0f);
+
     gpio_set_function(8, GPIO_FUNC_PWM);
     gpio_set_function(9, GPIO_FUNC_PWM);
     gpio_set_function(10, GPIO_FUNC_PWM);
@@ -449,7 +530,6 @@ int main(void) {
     wheels.slice_m1 = pwm_gpio_to_slice_num(8);
     wheels.slice_m2 = pwm_gpio_to_slice_num(10);
     initWheels(&wheels);
-    enableChips((motor_stat = false), wpt_stat, imu_stat);
 
     err_t e = server_init(&server, callback);
 
@@ -468,8 +548,12 @@ int main(void) {
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     while (1) {
-        watchdog_update();
         sleep_ms(10);
+        if (wheels.isInAngleControlMode) {
+            uint16_t b[3] = {0};
+            readIMU(&imu, b);
+            angleControlPIDTick(&wheels, (int16_t)(b[0]) / 16.0);
+        }
         if (readOutLT) {
             const uint8_t *t = getLaunchTelemAddr();
             for (uint32_t i = 0; i < 256 * 1024; i++) {
@@ -478,28 +562,8 @@ int main(void) {
             }
             readOutLT = false;
         }
-        int s = cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA);
-        switch (s) {
-            case CYW43_LINK_FAIL:
-                printf("Connection failed\r\n");
-                break;
-            case CYW43_LINK_NOIP:
-                printf("No IP assigned\r\n");
-                break;
-            case CYW43_LINK_DOWN:
-                printf("Connection is down\r\n");
-                break;
-            case CYW43_LINK_NONET:
-                printf("No matching SSID\r\n");
-                break;
-            default:
-                break;
-        }
-        if (!(wheels.running_1 || wheels.running_2)) {
-            enableChips((motor_stat = false), wpt_stat, imu_stat);
-        }
 
-        sunSearch();        
+        sunSearch();
     }
 
     return 0;

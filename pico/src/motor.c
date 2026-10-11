@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #define DEBUG_MOTOR
-#define MOTOR_DRY_RUN
 
 #ifdef DEBUG_MOTOR
 #include <stdio.h>
@@ -15,7 +14,7 @@
 static int64_t wheel_alarm_cb_1(alarm_id_t _id, void *data) {
     Wheels *w = (Wheels*)data;
 
-    pwm_set_both_levels(w->slice_m1, 10000, 10000);
+    pwm_set_both_levels(w->slice_m1, 0, 0);
 
     w->running_1 = false;
 
@@ -28,7 +27,7 @@ static int64_t wheel_alarm_cb_1(alarm_id_t _id, void *data) {
 static int64_t wheel_alarm_cb_2(alarm_id_t _id, void *data) {
     Wheels *w = (Wheels*)data;
 
-    pwm_set_both_levels(w->slice_m2, 10000, 10000);
+    pwm_set_both_levels(w->slice_m2, 0, 0);
 
     w->running_2 = false;
 
@@ -44,13 +43,14 @@ void initWheels(Wheels *w) {
 
     w->running_1 = false;
     w->running_2 = false;
+    w->onTarget = true;
     pwm_config c = pwm_get_default_config();
 
     pwm_config_set_clkdiv(&c, ((float)clock_get_hz(clk_sys) / wrap_v) / (1.0f * 1000.f));
     pwm_config_set_wrap(&c, wrap_v - 1);
 
-    pwm_init(w->slice_m1, &c, false);
-    pwm_init(w->slice_m2, &c, false);
+    pwm_init(w->slice_m1, &c, true);
+    pwm_init(w->slice_m2, &c, true);
 
     pwm_set_both_levels(w->slice_m1, 10000, 10000);
     pwm_set_both_levels(w->slice_m2, 10000, 10000);
@@ -76,8 +76,8 @@ int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t 
     sleep_ms(10);
     pwm_set_enabled(w->slice_m1, true);
     pwm_set_enabled(w->slice_m2, true);
-    add_alarm_in_ms(t1, wheel_alarm_cb_1, (void*)w, true);
-    add_alarm_in_ms(t2, wheel_alarm_cb_2, (void*)w, true);
+    w->m1_timer = add_alarm_in_ms(t1, wheel_alarm_cb_1, (void*)w, true);
+    w->m2_timer = add_alarm_in_ms(t2, wheel_alarm_cb_2, (void*)w, true);
 
     return 0;
 }
@@ -90,7 +90,38 @@ int setTargetAngle(Wheels *w, uint16_t angle) {
     w->running_1 = true;
     w->running_2 = true;
     w->target = angle;
+    w->isInAngleControlMode = true;
+    w->onTarget = false;
+    w->previous_error = 0;
+    w->integral_val = 0;
     return 0;
+}
+
+void angleControlPIDTick(Wheels *w, double angle) {
+    double e = w->target - angle;
+    w->integral_val += ((e + w->previous_error) * (PID_TIME/2));
+    double d = (e - w->previous_error)/PID_TIME;
+    double u = GAIN_P * e + GAIN_I * w->integral_val + GAIN_D * d;
+    uint16_t l  = (uint16_t)(u < 0.0 ? -u : u);
+    if (l > 10000) l = 10000;
+    if (l < 4000) l = 4000;
+    pwm_set_both_levels(w->slice_m1,
+        u > 0.0 ? l : 0,
+        u > 0.0 ? 0 : l
+    );
+    pwm_set_both_levels(w->slice_m2,
+        u > 0.0 ? 0 : l,
+        u > 0.0 ? l : 0
+    );
+    if ((e < 0.0 ? -e : e) < TARGET_ANGLE_MARGIN) {
+        w->isInAngleControlMode = false;
+        w->running_1 = false;
+        w->running_2 = false;
+        w->onTarget = true;
+        pwm_set_both_levels(w->slice_m1, 10000, 10000);
+        pwm_set_both_levels(w->slice_m2, 10000, 10000);
+    }
+    w->previous_error = e;
 }
 
 void initServo(Servo *s, float freq, uint16_t t_min, uint16_t t_max) {

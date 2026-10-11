@@ -8,6 +8,7 @@ typedef enum {
     INDEPENDENT,
     ABS_ANGLE,
     DELTA_ANGLE,
+    STOP,
     NUM_MOVE_MODE
 } MoveMode;
 

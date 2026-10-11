@@ -1,4 +1,5 @@
 #include <pico/stdlib.h>
+#include <pico/time.h>
 #include <pico/cyw43_arch.h>
 #include <pico/lwip_nosys.h>
 
@@ -116,6 +117,19 @@ void callback(void *arg) {
                     memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
                     break;
                     }
+                case STOP:
+                    {
+                    setAngle = false;
+                    w.running_1 = false;
+                    w.running_2 = false;
+                    cancel_alarm(w.m1_timer);
+                    cancel_alarm(w.m2_timer);
+                    pwm_set_both_levels(w.slice_m1, 10000, 10000);
+                    pwm_set_both_levels(w.slice_m2, 10000, 10000);
+                    buff[0] = 0;
+                    memcpy(&(srv->tx_buff[0]), buff, TX_BUFF_SZ);
+                    break;
+                    }
                 default:
                     break;
             };
@@ -124,6 +138,22 @@ void callback(void *arg) {
         default:
             break;
     }
+}
+
+uint16_t capPWMOutput(double u) {
+    double k = u < 0.0 ? -u : u; // abs(u)
+
+    // effective minimum
+    if (k < 35 * 100.0) {
+        return 3500;
+    }
+
+    // effective maximum
+    if (k > 100 * 100.0) {
+        return 10000;
+    }
+
+    return (uint16_t)k;
 }
 
 int main(void) {
@@ -138,6 +168,7 @@ int main(void) {
     gpio_pull_up(IMU_RST_PIN);
     enableChips(true, false, true);
 
+    printf("Connecting WiFi...\r\n");
     connectWifi();
     printf("IP: %s\r\n", inet_ntoa(netif_default->ip_addr.addr));
 
@@ -159,45 +190,61 @@ int main(void) {
     printf("Complete!\r\n");
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
+    sleep_ms(5000);
+    driveWheelsForMs(&w, 100, 100, 2000, 2000);
+    sleep_ms(5000);
+    driveWheelsForMs(&w, -100, 100, 3000, 3000);
+    sleep_ms(3500);
+    driveWheelsForMs(&w, 100, -100, 3000, 3000);
+    sleep_ms(3500);
+    driveWheelsForMs(&w, -100, -100, 750, 750);
+    sleep_ms(5000);
+    driveWheelsForMs(&w, 100, 100, 750, 750);
+    sleep_ms(750);
+
     uint16_t b[3] = {0};
 
     double pe = 0;
     double i = 0;
+    double d = 0;
 
-    double kp = 50;
-    double ki = 100;
+    double kp = 40;
+    double ki = 10;
+    double kd = 5;
 
     while (1) {
         if (setAngle) {
             readIMU(&imu, b);
             double current = (int16_t)b[0] / 16.0;
             double e = w.target - current;
-            i = i + ((e + pe) * (0.1/2.0));
-            if ((e < 0.0 ? -e : e) > TARGET_ANGLE_MARGIN) {
-                double u = (kp * e) + (ki * e);
-                printf("u = %lf\r\n", u);
-                if ((u < 0.0 ? -u : u) > 10000) u = 10000 * (u > 0.0 ? 1 : -1);
-                pwm_set_both_levels(w.slice_m1,
-                    u > 0.0 ? u : 0,
-                    u > 0.0 ? 0 : -u
-                );
-                pwm_set_both_levels(w.slice_m2,
-                    u > 0.0 ? 0 : -u,
-                    u > 0.0 ? u : 0
-                );
-            } else {
+            i = i + ((e + pe) * (0.005/2.0));
+            d = (e - pe)/0.005;
+            double u = (kp * e) + (ki * i) + (kd * d);
+            printf("u = %lf\r\n", u);
+            uint16_t l = capPWMOutput(u);
+            pwm_set_both_levels(w.slice_m1,
+                u > 0.0 ? l : 0,
+                u > 0.0 ? 0 : l
+            );
+            pwm_set_both_levels(w.slice_m2,
+                u > 0.0 ? 0 : l,
+                u > 0.0 ? l : 0
+            );
+            if ((e < 0.0 ? -e : e) < TARGET_ANGLE_MARGIN) {
                 setAngle = false;
                 w.running_1 = false;
                 w.running_2 = false;
                 pwm_set_both_levels(w.slice_m1, 10000, 10000);
                 pwm_set_both_levels(w.slice_m2, 10000, 10000);
-                pe = 0;
-                i = 0;
                 continue;
             }
             pe = e;
+        } else {
+            pe = 0;
+            i = 0;
+            d = 0;
         }
-        sleep_ms(100);
+        sleep_ms(5);
     }
 
     return 0;

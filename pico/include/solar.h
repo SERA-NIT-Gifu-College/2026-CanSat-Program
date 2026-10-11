@@ -16,6 +16,7 @@
  */
 typedef enum {
     SUNSEARCH_IDLE,
+    SUNSEARCH_INIT,
     SUNSEARCH_ROTATE_HEADING,
     SUNSEARCH_SCAN_HEADING,
     SUNSEARCH_ROTATE_BRIGHTEST,
@@ -30,6 +31,7 @@ typedef enum {
  */
 typedef struct {
     SunSearchStates state;
+    bool init;
     uint16_t heading;
     uint16_t max_brightness_heading;
     uint16_t pitch;

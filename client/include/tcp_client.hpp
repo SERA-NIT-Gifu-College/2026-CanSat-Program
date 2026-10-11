@@ -19,6 +19,7 @@ class TCP_Client {
             TOGGLE_WPT,
             TOGGLE_PARACHUTE,
             START_TELEM_EXTRACT,
+            WD_RESET,
             PING,
             NUM_COMMANDS
         } Command;
