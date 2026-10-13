@@ -16,7 +16,6 @@
       name = "shell";
       buildInputs = with pkgs; [
         boost
-        raylib
         gcc
         gnumake
         gdb

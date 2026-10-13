@@ -76,6 +76,11 @@ int setTargetAngle(Wheels *w, uint16_t d);
  */
 int driveWheelsForMs(Wheels *w, int8_t lev1, int8_t lev2, uint16_t t1, uint16_t t2);
 
+/**
+ * PID control tick
+ * @param w a pointer to wheels descriptor
+ * @param angle heading angle from IMU
+ */
 void angleControlPIDTick(Wheels *w, double angle);
 
 /**

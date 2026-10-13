@@ -1,15 +1,21 @@
 #ifndef __TCP_CLIENT_HPP__
 #define __TCP_CLIENT_HPP__
 
+/**
+ * @file tcp_client.hpp
+ * @brief TCP Client codes
+ */
+
 #include <array>
-#include <atomic>
 #include <string>
 #include <optional>
-#include <mutex>
 #include <boost/asio.hpp>
 
 class TCP_Client {
     public:
+        /**
+         * Copy of server commands from firmware
+         */
         typedef enum {
             GET_TELEMETRY,
             LOAD_CALIB,
@@ -24,8 +30,20 @@ class TCP_Client {
             NUM_COMMANDS
         } Command;
 
+        /**
+         * Constructor
+         * @param ctx a reference to ASIO IO context
+         * @param addr_str an address to CanSat as IPv4 string
+         * @param port a port number to CanSat server
+         */
         TCP_Client(boost::asio::io_context &ctx, std::string &addr_str, unsigned int port);
 
+        /**
+         * Sends command to CanSat
+         * @param cmd a command to be issued
+         * @param option 7 bytes including options for some commands
+         * @return an optional value wraps 16 bytes response
+         */
         std::optional<std::array<uint8_t, 16>> sendCommand(Command cmd, std::array<uint8_t, 7> &option);
     private:
         int do_rx();
@@ -39,7 +57,6 @@ class TCP_Client {
 
         std::array<uint8_t, 8> tx_buff_;
         std::array<uint8_t, 16> rx_buff_;
-        std::mutex rx_buff_mutex_;
 };
 
 #endif // __TCP_CLIENT_HPP__

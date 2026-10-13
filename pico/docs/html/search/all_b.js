@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['pidcontroller_0',['PIDController',['../structPIDController.html',1,'']]],
-  ['ping_5fpacket_5ftx_5flen_1',['PING_PACKET_TX_LEN',['../server_8h.html#a5d04c4d5b624d61083b2f38b1c19dedc',1,'server.h']]],
-  ['poll_5ftime_2',['POLL_TIME',['../server_8h.html#a589c789d252c794ac8a7356fea4269f2',1,'server.h']]]
+  ['readavg_0',['readAVG',['../light__sensor_8h.html#ab35faebae5b1517015907a31615552e6',1,'light_sensor.c']]],
+  ['readimu_1',['readIMU',['../imu_8h.html#a6c0f7cf71b131cd84770bd486b8cd9cb',1,'imu.c']]],
+  ['rx_5fbuff_5fsz_2',['RX_BUFF_SZ',['../server_8h.html#a0895d62bf7232a1651c9560347573ca2',1,'server.h']]]
 ];

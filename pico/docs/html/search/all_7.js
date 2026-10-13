@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['imu_2eh_0',['imu.h',['../imu_8h.html',1,'']]],
-  ['imu_5fint_5fpin_1',['IMU_INT_PIN',['../imu_8h.html#a19341139c6e88659aa56c863e115eaac',1,'imu.h']]],
-  ['imu_5frst_5fpin_2',['IMU_RST_PIN',['../chip__enable_8h.html#abe68668588d252c4b1144c1166f4a969',1,'chip_enable.h']]],
-  ['initservo_3',['initServo',['../motor_8h.html#a604678f8e24bed780bb641808a5014a6',1,'motor.c']]],
-  ['initwheels_4',['initWheels',['../motor_8h.html#ac0b5085e241496e604a747f2441a78a1',1,'motor.c']]]
+  ['light_5fsensor_2eh_0',['light_sensor.h',['../light__sensor_8h.html',1,'']]],
+  ['light_5fsensor_5fadc_5fnum_1',['LIGHT_SENSOR_ADC_NUM',['../light__sensor_8h.html#a5fadec41407f886f726728f3f5469f88',1,'light_sensor.h']]],
+  ['light_5fsensor_5fsampling_5finterval_2',['LIGHT_SENSOR_SAMPLING_INTERVAL',['../light__sensor_8h.html#a86c5831f86cef63ac7d6717689ab2faf',1,'light_sensor.h']]],
+  ['light_5fsensor_5fsampling_5fnumber_3',['LIGHT_SENSOR_SAMPLING_NUMBER',['../light__sensor_8h.html#a93b2b0de770df631543b5e5a93883a43',1,'light_sensor.h']]],
+  ['load_5fcalib_5fpacket_5ftx_5flen_4',['LOAD_CALIB_PACKET_TX_LEN',['../server_8h.html#a923a2fb14767bd2075c6b9c46b01a525',1,'server.h']]],
+  ['loadcalibration_5',['loadCalibration',['../imu_8h.html#ae8f046c3bafc005599a4c8f14d3989cc',1,'imu.c']]]
 ];

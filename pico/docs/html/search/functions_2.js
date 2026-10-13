@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['enablechips_0',['enableChips',['../chip__enable_8h.html#a75e8d5b5b0b3ccdc5162d219bc44ce38',1,'chip_enable.c']]]
+  ['drivewheelsforms_0',['driveWheelsForMs',['../motor_8h.html#ad369562c697f35401b26f182cdbbf91e',1,'motor.c']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['wheelspidtick_0',['wheelsPIDTick',['../motor_8h.html#a32be64f9fdb01aa65329f24a8475becd',1,'motor.c']]]
+  ['writelaunchtelem_0',['writeLaunchTelem',['../imu_8h.html#a75cf7b778961c0266f5881f35506b1df',1,'imu.c']]]
 ];

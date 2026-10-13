@@ -1,6 +1,24 @@
 var searchData=
 [
-  ['readavg_0',['readAVG',['../light__sensor_8h.html#ab35faebae5b1517015907a31615552e6',1,'light_sensor.c']]],
-  ['readimu_1',['readIMU',['../imu_8h.html#a6c0f7cf71b131cd84770bd486b8cd9cb',1,'imu.c']]],
-  ['rx_5fbuff_5fsz_2',['RX_BUFF_SZ',['../server_8h.html#a0895d62bf7232a1651c9560347573ca2',1,'server.h']]]
+  ['save_5fcalib_5fpacket_5ftx_5flen_0',['SAVE_CALIB_PACKET_TX_LEN',['../server_8h.html#aab95864b17dd6f5676f552c763707e3e',1,'server.h']]],
+  ['savecalibration_1',['saveCalibration',['../imu_8h.html#ac5de230a8b55717a29522814a71bd875',1,'imu.c']]],
+  ['search_5fsun_5fpacket_5ftx_5flen_2',['SEARCH_SUN_PACKET_TX_LEN',['../server_8h.html#a55ab8f8d67815798baa3f8609220fc50',1,'server.h']]],
+  ['serializetelemetry_3',['serializeTelemetry',['../main_8h.html#a6659ee1f3b32ec10cffe04a46c0c8386',1,'main.c']]],
+  ['server_4',['Server',['../structServer.html',1,'']]],
+  ['server_2eh_5',['server.h',['../server_8h.html',1,'']]],
+  ['server_5fclose_6',['server_close',['../server_8h.html#ac5a72e5ec9069c64765096ea76b6c921',1,'server.c']]],
+  ['server_5finit_7',['server_init',['../server_8h.html#abad8fd2780e63323efd82ae22c2c69f6',1,'server.c']]],
+  ['servo_8',['Servo',['../structServo.html',1,'']]],
+  ['setservoangle_9',['setServoAngle',['../motor_8h.html#a8744f381267473c0018bf5608a340bac',1,'motor.c']]],
+  ['settargetangle_10',['setTargetAngle',['../motor_8h.html#a8f92635afcefb70b8ed95b28e3299b69',1,'motor.c']]],
+  ['setupimu_11',['setupIMU',['../imu_8h.html#a450fb1891524f219eaafec9917e34632',1,'imu.c']]],
+  ['setupimulaunchphase_12',['setupIMULaunchPhase',['../imu_8h.html#a849c3373bb8c95b77a2f064fd913de23',1,'imu.c']]],
+  ['setuplightsensor_13',['setupLightSensor',['../light__sensor_8h.html#a1ceee0fcbb43f44c753e810587f45ec6',1,'light_sensor.c']]],
+  ['setupsolarmon_14',['setupSolarMon',['../solar_8h.html#a4d22591b9925f2fdd26678e24a21a5e8',1,'solar.c']]],
+  ['solar_2eh_15',['solar.h',['../solar_8h.html',1,'']]],
+  ['solar_5fadc_5fnum_16',['SOLAR_ADC_NUM',['../solar_8h.html#a1342682fe88438288e4058289a659647',1,'solar.h']]],
+  ['start_5ftelem_5fextract_5fpacket_5ftx_5flen_17',['START_TELEM_EXTRACT_PACKET_TX_LEN',['../server_8h.html#ac631a32277492e9a15aeb9b6704b6668',1,'server.h']]],
+  ['sunsearch_18',['sunSearch',['../main_8h.html#ae57f5e2df35648530c724a8804d20d23',1,'main.c']]],
+  ['sunsearchsm_19',['SunSearchSM',['../structSunSearchSM.html',1,'']]],
+  ['sunsearchstates_20',['SunSearchStates',['../solar_8h.html#a6585bee90c0e906787629127d32db032',1,'solar.h']]]
 ];

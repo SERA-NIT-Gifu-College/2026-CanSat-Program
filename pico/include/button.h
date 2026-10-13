@@ -8,6 +8,9 @@
 
 #include <pico/stdlib.h>
 
+/**
+ * Get bootsel button state
+ */
 bool __no_inline_not_in_flash_func(getBootselBtn)();
 
 #endif // __BUTTON_H__
